@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ApiService } from '../services/api.service';
@@ -10,12 +10,13 @@ import { Usuario, Empresa, Genero, StatusUsuario } from '../models/index';
 @Component({
   selector: 'app-create-user',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   template: `
     <div class="min-h-screen bg-gray-900 p-8">
       <div class="max-w-2xl mx-auto">
         <div class="bg-gray-800 rounded-lg shadow-lg p-8">
-          <h1 class="text-3xl font-bold text-white mb-6">Create Test User</h1>
+          <h1 class="text-3xl font-bold text-white mb-2">Create Account</h1>
+          <p class="text-gray-400 mb-6">Register a new user account</p>
 
           <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
             <div class="grid grid-cols-2 gap-6">
@@ -189,7 +190,7 @@ import { Usuario, Empresa, Genero, StatusUsuario } from '../models/index';
                 [disabled]="loading || userForm.invalid"
                 class="flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white font-semibold rounded transition"
               >
-                {{ loading ? 'Creating...' : 'Create User' }}
+                {{ loading ? 'Creating...' : 'Register' }}
               </button>
               <button
                 type="button"
@@ -198,15 +199,24 @@ import { Usuario, Empresa, Genero, StatusUsuario } from '../models/index';
               >
                 Clear Form
               </button>
-              <button
-                type="button"
-                (click)="goToDashboard()"
-                class="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded transition"
+              <a
+                routerLink="/login"
+                class="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded transition text-center"
               >
-                Back to Dashboard
-              </button>
+                Back to Login
+              </a>
             </div>
           </form>
+
+          <!-- Login Link -->
+          <div class="mt-6 text-center">
+            <p class="text-gray-400 text-sm">
+              Already have an account? 
+              <a routerLink="/login" class="text-blue-400 hover:text-blue-300 font-semibold transition">
+                Log in here
+              </a>
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -227,8 +237,7 @@ export class CreateUserComponent implements OnInit, OnDestroy {
 
   constructor(
     private fb: FormBuilder,
-    private apiService: ApiService,
-    private router: Router
+    private apiService: ApiService
   ) {
     this.userForm = this.fb.group({
       IdUsuario: ['', Validators.required],
@@ -308,12 +317,12 @@ export class CreateUserComponent implements OnInit, OnDestroy {
       IdStatusUsuario: parseInt(formValue.IdStatusUsuario)
     };
 
-    this.apiService.crearUsuario(usuario)
+    this.apiService.registroPublico(usuario)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
           this.loading = false;
-          this.successMessage = `User "${usuario.IdUsuario}" created successfully!`;
+          this.successMessage = `¡Usuario "${usuario.IdUsuario}" registrado exitosamente! Ahora puedes iniciar sesión.`;
           this.resetForm();
           setTimeout(() => {
             this.successMessage = '';
@@ -321,7 +330,7 @@ export class CreateUserComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           this.loading = false;
-          this.errorMessage = error?.error?.mensaje || 'Failed to create user';
+          this.errorMessage = error?.error?.mensaje || 'Error al registrar usuario';
           console.error('Error creating user:', error);
         }
       });
@@ -331,10 +340,6 @@ export class CreateUserComponent implements OnInit, OnDestroy {
     this.userForm.reset();
     this.successMessage = '';
     this.errorMessage = '';
-  }
-
-  goToDashboard(): void {
-    this.router.navigate(['/dashboard']);
   }
 
   ngOnDestroy(): void {

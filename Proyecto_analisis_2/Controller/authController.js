@@ -127,4 +127,67 @@ async function logout(req, res) {
   }
 }
 
-module.exports = { login, logout };
+// Registración pública para usuarios nuevos
+async function register(req, res) {
+  const { 
+    IdUsuario, Password, Nombre, Apellido, IdRole,
+    FechaNacimiento, IdGenero, IdSucursal, CorreoElectronico, TelefonoMovil, IdStatusUsuario
+  } = req.body;
+
+  // Validar campos obligatorios
+  if (!IdUsuario || !Password || !Nombre || !Apellido || !IdRole || !FechaNacimiento || !IdGenero || !IdSucursal) {
+    return res.status(400).json({ 
+      mensaje: 'Faltan campos obligatorios: IdUsuario, Password, Nombre, Apellido, IdRole, FechaNacimiento, IdGenero, IdSucursal' 
+    });
+  }
+
+  try {
+    // Verificar que el usuario no exista ya
+    const usuarioExistente = await usuarioModel.obtenerPorId(IdUsuario);
+    if (usuarioExistente) {
+      return res.status(409).json({ mensaje: 'El nombre de usuario ya está en uso. Elige otro.' });
+    }
+
+    // Crear usuario con status activo por defecto si no se especifica
+    const usuarioData = {
+      IdUsuario,
+      Password,
+      Nombre,
+      Apellido,
+      IdRole,
+      FechaNacimiento,
+      IdGenero,
+      IdSucursal,
+      CorreoElectronico: CorreoElectronico || null,
+      TelefonoMovil: TelefonoMovil || null,
+      IdStatusUsuario: IdStatusUsuario || STATUS_ACTIVO, // Status activo por defecto
+      IntentosDeAcceso: 0
+    };
+
+    await usuarioModel.crearUsuario(usuarioData);
+
+    // Registrar el acceso exitoso de registro
+    const ipOrigen = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    const navegador = req.headers['user-agent'];
+    
+    await bitacoraModel.registrarAcceso({
+      IdUsuario,
+      IdTipoAcceso: 6, // Tipo de acceso personalizado para registro (puede ajustarse según tabla)
+      DireccionIp: ipOrigen,
+      HttpUserAgent: navegador,
+      Acceso: 'Registro de nuevo usuario'
+    });
+
+    res.status(201).json({ 
+      mensaje: `¡Usuario ${IdUsuario} registrado exitosamente! Ya puedes iniciar sesión.` 
+    });
+
+  } catch (error) {
+    console.error('Error en registro:', error);
+    res.status(500).json({ 
+      error: error.message || 'Error al registrar usuario' 
+    });
+  }
+}
+
+module.exports = { login, logout, register };

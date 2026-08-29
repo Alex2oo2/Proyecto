@@ -179,4 +179,12 @@ export class ApiService {
       { headers: this.getHeaders() }
     ).pipe(catchError(error => this.handleError(error)));
   }
+
+  // Public registration endpoint (no auth required)
+  registroPublico(usuario: Usuario): Observable<any> {
+    return this.http.post(
+      `${this.apiUrl}/auth/register`,
+      usuario
+    ).pipe(catchError(error => this.handleError(error)));
+  }
 }
