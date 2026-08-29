@@ -1,0 +1,61 @@
+<aside 
+  [class.translate-x-0]="isOpen"
+  [class.-translate-x-full]="!isOpen"
+  class="fixed left-0 top-16 h-[calc(100vh-64px)] w-64 bg-gradient-to-b from-slate-800 to-slate-900 border-r border-slate-700 overflow-y-auto transition-transform duration-300 z-40 lg:translate-x-0 lg:static lg:top-0 lg:h-screen shadow-lg">
+  
+  <!-- Sidebar Content -->
+  <nav class="p-4 space-y-2">
+    <div *ngFor="let item of navItems" class="mb-2">
+      <!-- Top Level Item -->
+      <div *ngIf="!item.children">
+        <a 
+          [routerLink]="item.route"
+          (click)="onItemClick()"
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700 transition-all duration-200">
+          <span class="text-lg">{{ item.icon }}</span>
+          <span class="font-medium">{{ item.label }}</span>
+          <span *ngIf="item.badge" class="ml-auto bg-blue-600 text-white text-xs rounded-full px-2 py-0.5">
+            {{ item.badge }}
+          </span>
+        </a>
+      </div>
+
+      <!-- Menu Item with Children -->
+      <div *ngIf="item.children">
+        <button 
+          (click)="toggleMenu(item.label)"
+          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700 transition-all duration-200">
+          <span class="text-lg">{{ item.icon }}</span>
+          <span class="font-medium">{{ item.label }}</span>
+          <svg 
+            [class.rotate-180]="isMenuExpanded(item.label)"
+            class="ml-auto w-4 h-4 transition-transform duration-300">
+            <path fill="currentColor" d="M7 10l5 5 5-5z"></path>
+          </svg>
+        </button>
+
+        <!-- Submenu Items -->
+        <div 
+          *ngIf="isMenuExpanded(item.label)"
+          class="mt-1 ml-4 pl-4 border-l-2 border-slate-700 space-y-1">
+          <a 
+            *ngFor="let child of item.children"
+            [routerLink]="child.route"
+            (click)="onItemClick()"
+            class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-slate-400 hover:text-white hover:bg-slate-700 transition-all duration-200">
+            <span>{{ child.icon }}</span>
+            <span>{{ child.label }}</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Sidebar Footer -->
+  <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-700 bg-gradient-to-t from-slate-900 to-transparent">
+    <div class="text-xs text-slate-500 text-center">
+      <p>© 2026 Proyecto Análisis</p>
+      <p>v1.0.0</p>
+    </div>
+  </div>
+</aside>

@@ -3,21 +3,21 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { ApiService } from '../services/api.service';
-import { CompaniesComponent } from './companies.component';
-import { BranchesComponent } from './branches.component';
+import { NavbarComponent } from './navbar.component';
+import { SidebarComponent } from './sidebar.component';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, CompaniesComponent, BranchesComponent],
+  imports: [CommonModule, RouterModule, NavbarComponent, SidebarComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   currentUser: any = null;
-  activeTab = 'companies';
+  sidebarOpen = false;
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -39,8 +39,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  setActiveTab(tab: string): void {
-    this.activeTab = tab;
+  toggleSidebar(): void {
+    this.sidebarOpen = !this.sidebarOpen;
+  }
+
+  closeSidebar(): void {
+    this.sidebarOpen = false;
   }
 
   logout(): void {

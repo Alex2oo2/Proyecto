@@ -1,0 +1,89 @@
+<nav class="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-b border-slate-700 shadow-lg">
+  <div class="px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-16">
+      <!-- Logo & Brand -->
+      <div class="flex items-center gap-3">
+        <button 
+          (click)="toggleNav()" 
+          class="lg:hidden p-2 rounded-lg hover:bg-slate-700 transition text-slate-300">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center">
+            <span class="text-white font-bold text-sm">PA</span>
+          </div>
+          <div class="hidden sm:block">
+            <h1 class="text-lg font-bold text-white">Proyecto Análisis</h1>
+            <p class="text-xs text-slate-400">Sistema de Gestión</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Center Navigation (Desktop) -->
+      <div class="hidden md:flex items-center gap-1">
+        <a routerLink="/dashboard" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700 transition">
+          Inicio
+        </a>
+        <a routerLink="/usuarios" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700 transition">
+          Usuarios
+        </a>
+        <a routerLink="/roles" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700 transition">
+          Roles
+        </a>
+        <div class="px-2">
+          <div class="w-px h-6 bg-slate-700"></div>
+        </div>
+        <a routerLink="/empresas" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700 transition">
+          Catálogos
+        </a>
+      </div>
+
+      <!-- Right Actions -->
+      <div class="flex items-center gap-4">
+        <a 
+          routerLink="/change-password"
+          class="hidden sm:inline-flex px-3 py-1.5 text-sm font-medium text-blue-300 hover:text-blue-200 transition">
+          🔐 Cambiar Contraseña
+        </a>
+        
+        <!-- Profile Dropdown -->
+        <div class="relative">
+          <button 
+            (click)="toggleProfileMenu()"
+            class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-700 transition text-slate-300 hover:text-white">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-cyan-400 flex items-center justify-center text-sm font-bold text-slate-900">
+              {{ currentUser?.Nombre?.charAt(0) || 'U' }}
+            </div>
+            <span class="hidden sm:inline text-sm font-medium max-w-[120px] truncate">
+              {{ currentUser?.Nombre || 'Usuario' }}
+            </span>
+          </button>
+
+          <!-- Dropdown Menu -->
+          <div 
+            *ngIf="showProfileMenu"
+            class="absolute right-0 mt-2 w-48 bg-slate-800 rounded-lg shadow-xl border border-slate-700 py-2 z-50">
+            <div class="px-4 py-2 border-b border-slate-700">
+              <p class="text-sm font-semibold text-white">{{ currentUser?.Nombre }}</p>
+              <p class="text-xs text-slate-400">{{ currentUser?.CorreoElectronico }}</p>
+              <p class="text-xs text-slate-500">{{ currentUser?.NombreRole }}</p>
+            </div>
+            <a 
+              routerLink="/change-password"
+              (click)="showProfileMenu = false"
+              class="block px-4 py-2 text-sm text-slate-300 hover:text-white hover:bg-slate-700 transition">
+              🔐 Cambiar Contraseña
+            </a>
+            <button 
+              (click)="logout()"
+              class="w-full text-left px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-slate-700 transition">
+              🚪 Cerrar Sesión
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>

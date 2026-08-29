@@ -1,7 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const usuarioController = require('../Controller/usuarioController.js');
-const { verificarPermisos } = require('../Middleware/autorizacion.js');
+const { autenticar, verificarPermisos } = require('../Middleware/autorizacion.js');
+
+// Aplicar autenticación a todas las rutas en este router
+router.use(autenticar);
 
 router.get('/usuarios', verificarPermisos('Usuarios', 'Consultar'), usuarioController.obtenerTodos);
 router.get('/usuarios/:id', verificarPermisos('Usuarios', 'Consultar'), usuarioController.obtenerPorId);
