@@ -163,6 +163,14 @@ export class ApiService {
     ).pipe(catchError(error => this.handleError(error)));
   }
 
+  // ============ ROLES ============
+  getRoles(): Observable<any[]> {
+    return this.http.get<any[]>(
+      `${this.apiUrl}/seguridad/roles`,
+      { headers: this.getHeaders() }
+    ).pipe(catchError(error => this.handleError(error)));
+  }
+
   // ============ USUARIOS ============
   crearUsuario(usuario: Usuario): Observable<any> {
     return this.http.post(
