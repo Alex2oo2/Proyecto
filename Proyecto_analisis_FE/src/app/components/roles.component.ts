@@ -64,10 +64,19 @@ export class RolesComponent implements OnInit {
   loadMatrizPermisos(idRole: number, idModulo: number) {
     this.apiService.obtenerMatrizPermisos(idRole, idModulo).subscribe({
       next: (data) => {
-        this.matrizPermisos = data;
+        // Ensure all permission values are integers (1 or 0)
+        this.matrizPermisos = data.map(p => ({
+          ...p,
+          Alta: p.Alta ? 1 : 0,
+          Baja: p.Baja ? 1 : 0,
+          Cambio: p.Cambio ? 1 : 0,
+          Imprimir: p.Imprimir ? 1 : 0,
+          Exportar: p.Exportar ? 1 : 0
+        }));
       },
       error: (err) => {
         this.error = 'Error al cargar matriz de permisos';
+        console.error('Error loading permissions:', err);
       }
     });
   }
@@ -144,20 +153,24 @@ export class RolesComponent implements OnInit {
     const permisosActualizados = this.matrizPermisos.map(p => ({
       IdRole: this.selectedRoleId,
       IdOpcion: p.IdOpcion,
-      Alta: p.Alta,
-      Baja: p.Baja,
-      Cambio: p.Cambio,
-      Imprimir: p.Imprimir,
-      Exportar: p.Exportar
+      Alta: p.Alta ? 1 : 0,
+      Baja: p.Baja ? 1 : 0,
+      Cambio: p.Cambio ? 1 : 0,
+      Imprimir: p.Imprimir ? 1 : 0,
+      Exportar: p.Exportar ? 1 : 0
     }));
 
     this.apiService.guardarMatrizPermisos(permisosActualizados).subscribe({
       next: () => {
         this.success = 'Permisos guardados exitosamente';
-        this.showPermisosModal = false;
+        setTimeout(() => {
+          this.showPermisosModal = false;
+          this.success = null;
+        }, 1500);
       },
       error: (err) => {
-        this.error = 'Error al guardar permisos';
+        this.error = 'Error al guardar permisos: ' + (err.error?.error || err.message);
+        console.error('Error saving permissions:', err);
       }
     });
   }
@@ -180,5 +193,16 @@ export class RolesComponent implements OnInit {
     if (!this.showForm) {
       this.resetForm();
     }
+  }
+
+  onModuloChange() {
+    if (this.selectedRoleId && this.selectedModuloId) {
+      this.loadMatrizPermisos(this.selectedRoleId, this.selectedModuloId);
+    }
+  }
+
+  closePermisosModal() {
+    this.showPermisosModal = false;
+    this.matrizPermisos = [];
   }
 }
