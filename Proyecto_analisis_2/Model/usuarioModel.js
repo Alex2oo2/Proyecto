@@ -43,13 +43,13 @@ async function bloquearUsuario(idUsuario, idStatusBloqueado) {
 
 // Agregar estas funciones al archivo usuarioModel.js existente
 
-async function registrarLoginExitoso(idUsuario, idStatusActivo, sesionActual) {
+async function registrarLoginExitoso(idUsuario, idStatusActivo) {
   const sql = `
     UPDATE USUARIO 
-    SET IntentosDeAcceso = 0, IdStatusUsuario = ?, UltimaFechaIngreso = NOW(), SesionActual = ?
+    SET IntentosDeAcceso = 0, IdStatusUsuario = ?, UltimaFechaIngreso = NOW()
     WHERE IdUsuario = ?
   `;
-  await db.query(sql, [idStatusActivo, sesionActual, idUsuario]);
+  await db.query(sql, [idStatusActivo, idUsuario]);
 }
 
 async function cerrarSesion(idUsuario) {

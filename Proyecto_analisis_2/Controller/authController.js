@@ -106,7 +106,7 @@ async function login(req, res) {
       { expiresIn: '8h' }
     );
 
-    await usuarioModel.registrarLoginExitoso(Username, STATUS_ACTIVO, token);
+    await usuarioModel.registrarLoginExitoso(Username, STATUS_ACTIVO);
 
     await bitacoraModel.registrarAcceso({
       IdUsuario: usuario.IdUsuario,
