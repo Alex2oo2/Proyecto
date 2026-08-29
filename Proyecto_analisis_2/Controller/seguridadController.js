@@ -11,6 +11,27 @@ async function obtenerModulos(req, res) {
   } catch (error) { res.status(500).json({ error: error.message }); }
 }
 
+async function crearModulo(req, res) {
+  try {
+    const id = await moduloModel.crear(req.body);
+    res.status(201).json({ mensaje: 'Módulo creado', id });
+  } catch (error) { res.status(500).json({ error: error.message }); }
+}
+
+async function actualizarModulo(req, res) {
+  try {
+    await moduloModel.actualizar(req.params.id, req.body);
+    res.json({ mensaje: 'Módulo actualizado exitosamente' });
+  } catch (error) { res.status(500).json({ error: error.message }); }
+}
+
+async function eliminarModulo(req, res) {
+  try {
+    await moduloModel.eliminar(req.params.id);
+    res.json({ mensaje: 'Módulo eliminado exitosamente' });
+  } catch (error) { res.status(500).json({ error: error.message }); }
+}
+
 async function obtenerMenus(req, res) {
   try {
     const { idModulo } = req.query;
@@ -21,6 +42,27 @@ async function obtenerMenus(req, res) {
   } catch (error) { res.status(500).json({ error: error.message }); }
 }
 
+async function crearMenu(req, res) {
+  try {
+    const id = await menuModel.crear(req.body);
+    res.status(201).json({ mensaje: 'Menú creado', id });
+  } catch (error) { res.status(500).json({ error: error.message }); }
+}
+
+async function actualizarMenu(req, res) {
+  try {
+    await menuModel.actualizar(req.params.id, req.body);
+    res.json({ mensaje: 'Menú actualizado exitosamente' });
+  } catch (error) { res.status(500).json({ error: error.message }); }
+}
+
+async function eliminarMenu(req, res) {
+  try {
+    await menuModel.eliminar(req.params.id);
+    res.json({ mensaje: 'Menú eliminado exitosamente' });
+  } catch (error) { res.status(500).json({ error: error.message }); }
+}
+
 async function obtenerOpciones(req, res) {
   try {
     const { idMenu } = req.query;
@@ -28,6 +70,27 @@ async function obtenerOpciones(req, res) {
       ? await opcionModel.obtenerPorMenu(idMenu)
       : await opcionModel.obtenerTodos();
     res.json(opciones);
+  } catch (error) { res.status(500).json({ error: error.message }); }
+}
+
+async function crearOpcion(req, res) {
+  try {
+    const id = await opcionModel.crear(req.body);
+    res.status(201).json({ mensaje: 'Opción creada', id });
+  } catch (error) { res.status(500).json({ error: error.message }); }
+}
+
+async function actualizarOpcion(req, res) {
+  try {
+    await opcionModel.actualizar(req.params.id, req.body);
+    res.json({ mensaje: 'Opción actualizada exitosamente' });
+  } catch (error) { res.status(500).json({ error: error.message }); }
+}
+
+async function eliminarOpcion(req, res) {
+  try {
+    await opcionModel.eliminar(req.params.id);
+    res.json({ mensaje: 'Opción eliminada exitosamente' });
   } catch (error) { res.status(500).json({ error: error.message }); }
 }
 
@@ -42,6 +105,20 @@ async function crearRole(req, res) {
   try {
     const id = await roleModel.crear(req.body);
     res.status(201).json({ mensaje: 'Rol creado', id });
+  } catch (error) { res.status(500).json({ error: error.message }); }
+}
+
+async function actualizarRole(req, res) {
+  try {
+    await roleModel.actualizar(req.params.id, req.body);
+    res.json({ mensaje: 'Rol actualizado exitosamente' });
+  } catch (error) { res.status(500).json({ error: error.message }); }
+}
+
+async function eliminarRole(req, res) {
+  try {
+    await roleModel.eliminar(req.params.id);
+    res.json({ mensaje: 'Rol eliminado exitosamente' });
   } catch (error) { res.status(500).json({ error: error.message }); }
 }
 
@@ -73,7 +150,9 @@ async function guardarMatrizPermisos(req, res) {
 }
 
 module.exports = {
-  obtenerModulos, obtenerMenus, obtenerOpciones,
-  obtenerRoles, crearRole, 
+  obtenerModulos, crearModulo, actualizarModulo, eliminarModulo,
+  obtenerMenus, crearMenu, actualizarMenu, eliminarMenu,
+  obtenerOpciones, crearOpcion, actualizarOpcion, eliminarOpcion,
+  obtenerRoles, crearRole, actualizarRole, eliminarRole,
   obtenerMatrizPermisos, guardarMatrizPermisos
 };

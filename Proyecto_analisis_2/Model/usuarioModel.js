@@ -102,6 +102,7 @@ module.exports = {
   obtenerPorId,
   registrarIntentoFallido,
   bloquearUsuario,
-  resetearIntentosYEstado,
+  registrarLoginExitoso,
+  cerrarSesion,
   crearUsuario
 };

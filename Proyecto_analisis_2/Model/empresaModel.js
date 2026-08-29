@@ -114,7 +114,8 @@ async function obtenerPoliticasPasswordPorUsuario(idUsuario) {
 module.exports = { 
   obtenerTodos, 
   obtenerPorId, 
-  obtenerPoliticasPassword, 
+  obtenerPoliticasPassword,
+  obtenerPoliticasPasswordPorUsuario,
   crear, 
   actualizar, 
   eliminar 
