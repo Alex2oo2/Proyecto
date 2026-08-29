@@ -50,7 +50,12 @@ async function crear(req, res) {
       return res.status(409).json({ mensaje: 'El nombre de usuario ya está en uso' });
     }
 
-    await usuarioModel.crearUsuario(req.body);
+    const datosUsuario = {
+      ...req.body,
+      UsuarioCreacion: req.usuario.IdUsuario
+    };
+
+    await usuarioModel.crearUsuario(datosUsuario);
     
     res.status(201).json({ mensaje: 'Usuario creado exitosamente' });
 

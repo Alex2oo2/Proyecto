@@ -13,14 +13,16 @@ async function obtenerModulos(req, res) {
 
 async function crearModulo(req, res) {
   try {
-    const id = await moduloModel.crear(req.body);
+    const datos = { ...req.body, UsuarioCreacion: req.usuario.IdUsuario };
+    const id = await moduloModel.crear(datos);
     res.status(201).json({ mensaje: 'Módulo creado', id });
   } catch (error) { res.status(500).json({ error: error.message }); }
 }
 
 async function actualizarModulo(req, res) {
   try {
-    await moduloModel.actualizar(req.params.id, req.body);
+    const datos = { ...req.body, UsuarioModificacion: req.usuario.IdUsuario };
+    await moduloModel.actualizar(req.params.id, datos);
     res.json({ mensaje: 'Módulo actualizado exitosamente' });
   } catch (error) { res.status(500).json({ error: error.message }); }
 }
@@ -44,14 +46,16 @@ async function obtenerMenus(req, res) {
 
 async function crearMenu(req, res) {
   try {
-    const id = await menuModel.crear(req.body);
+    const datos = { ...req.body, UsuarioCreacion: req.usuario.IdUsuario };
+    const id = await menuModel.crear(datos);
     res.status(201).json({ mensaje: 'Menú creado', id });
   } catch (error) { res.status(500).json({ error: error.message }); }
 }
 
 async function actualizarMenu(req, res) {
   try {
-    await menuModel.actualizar(req.params.id, req.body);
+    const datos = { ...req.body, UsuarioModificacion: req.usuario.IdUsuario };
+    await menuModel.actualizar(req.params.id, datos);
     res.json({ mensaje: 'Menú actualizado exitosamente' });
   } catch (error) { res.status(500).json({ error: error.message }); }
 }
@@ -75,14 +79,16 @@ async function obtenerOpciones(req, res) {
 
 async function crearOpcion(req, res) {
   try {
-    const id = await opcionModel.crear(req.body);
+    const datos = { ...req.body, UsuarioCreacion: req.usuario.IdUsuario };
+    const id = await opcionModel.crear(datos);
     res.status(201).json({ mensaje: 'Opción creada', id });
   } catch (error) { res.status(500).json({ error: error.message }); }
 }
 
 async function actualizarOpcion(req, res) {
   try {
-    await opcionModel.actualizar(req.params.id, req.body);
+    const datos = { ...req.body, UsuarioModificacion: req.usuario.IdUsuario };
+    await opcionModel.actualizar(req.params.id, datos);
     res.json({ mensaje: 'Opción actualizada exitosamente' });
   } catch (error) { res.status(500).json({ error: error.message }); }
 }
@@ -103,14 +109,16 @@ async function obtenerRoles(req, res) {
 
 async function crearRole(req, res) {
   try {
-    const id = await roleModel.crear(req.body);
+    const datos = { ...req.body, UsuarioCreacion: req.usuario.IdUsuario };
+    const id = await roleModel.crear(datos);
     res.status(201).json({ mensaje: 'Rol creado', id });
   } catch (error) { res.status(500).json({ error: error.message }); }
 }
 
 async function actualizarRole(req, res) {
   try {
-    await roleModel.actualizar(req.params.id, req.body);
+    const datos = { ...req.body, UsuarioModificacion: req.usuario.IdUsuario };
+    await roleModel.actualizar(req.params.id, datos);
     res.json({ mensaje: 'Rol actualizado exitosamente' });
   } catch (error) { res.status(500).json({ error: error.message }); }
 }
@@ -135,13 +143,16 @@ async function obtenerMatrizPermisos(req, res) {
 
 async function guardarMatrizPermisos(req, res) {
   try {
-    const permisos = req.body; 
+    const permisos = req.body;
+    const usuarioActual = req.usuario.IdUsuario; // Get current user from JWT token
     
     if (!Array.isArray(permisos)) {
       return res.status(400).json({ mensaje: 'Se espera un arreglo de permisos' });
     }
 
     for (const permiso of permisos) {
+      // Add the current user to each permission record
+      permiso.Usuario = usuarioActual;
       await roleOpcionModel.guardarPermiso(permiso);
     }
     

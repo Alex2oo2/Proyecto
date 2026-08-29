@@ -18,21 +18,24 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'create-user', component: CreateUserComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
-  { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
-  { path: 'change-password', component: ChangePasswordComponent, canActivate: [authGuard] },
   
-  // Catalog Management
-  { path: 'empresas', component: CompaniesComponent, canActivate: [authGuard] },
-  { path: 'sucursales', component: BranchesComponent, canActivate: [authGuard] },
-  
-  // User Management
-  { path: 'usuarios', component: UsersComponent, canActivate: [authGuard] },
-  
-  // Security Management
-  { path: 'modulos', component: ModulosComponent, canActivate: [authGuard] },
-  { path: 'menus', component: MenusComponent, canActivate: [authGuard] },
-  { path: 'opciones', component: OpcionesComponent, canActivate: [authGuard] },
-  { path: 'roles', component: RolesComponent, canActivate: [authGuard] },
+  // Dashboard with child routes - navbar and sidebar persist
+  { 
+    path: 'dashboard', 
+    component: DashboardComponent,
+    canActivate: [authGuard],
+    children: [
+      { path: '', component: ModulosComponent },
+      { path: 'change-password', component: ChangePasswordComponent },
+      { path: 'empresas', component: CompaniesComponent },
+      { path: 'sucursales', component: BranchesComponent },
+      { path: 'usuarios', component: UsersComponent },
+      { path: 'modulos', component: ModulosComponent },
+      { path: 'menus', component: MenusComponent },
+      { path: 'opciones', component: OpcionesComponent },
+      { path: 'roles', component: RolesComponent }
+    ]
+  },
   
   { path: '**', redirectTo: '/dashboard' }
 ];
