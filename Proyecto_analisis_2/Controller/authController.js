@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 // IDs fijos según el seed de STATUS_USUARIO: 1=Activo, 2=Bloqueado, 3=Inactivo
 const STATUS_ACTIVO = 1;
 const STATUS_BLOQUEADO = 2;
+const STATUS_INACTIVO = 3;
 
 // IDs fijos según el seed de TIPO_ACCESO
 const ACCESO_CONCEDIDO = 1;
@@ -48,6 +49,19 @@ async function login(req, res) {
       });
       return res.status(403).json({
         mensaje: 'Cuenta bloqueada por intentos fallidos. Contacta al Administrador para desbloquearla.'
+      });
+    }
+
+    if (usuario.IdStatusUsuario === STATUS_INACTIVO) {
+      await bitacoraModel.registrarAcceso({
+        IdUsuario: usuario.IdUsuario,
+        IdTipoAcceso: USUARIO_INACTIVO,
+        DireccionIp: ipOrigen,
+        HttpUserAgent: navegador,
+        Acceso: 'Intento de acceso con cuenta inactiva'
+      });
+      return res.status(403).json({
+        mensaje: 'Tu cuenta está inactiva. Contacta al Administrador.'
       });
     }
 
@@ -105,11 +119,14 @@ async function login(req, res) {
     res.json({
       mensaje: '¡Inicio de sesión exitoso!',
       token,
+      requiereCambiarPassword: usuario.RequiereCambiarPassword === 1,
       usuario: {
-        id: usuario.IdUsuario,
-        nombre: `${usuario.Nombre} ${usuario.Apellido}`,
-        correo: usuario.CorreoElectronico,
-        rol: usuario.NombreRole
+        IdUsuario: usuario.IdUsuario,
+        Nombre: usuario.Nombre,
+        Apellido: usuario.Apellido,
+        IdRole: usuario.IdRole,
+        NombreRole: usuario.NombreRole,
+        CorreoElectronico: usuario.CorreoElectronico
       }
     });
 
@@ -160,19 +177,20 @@ async function register(req, res) {
       IdSucursal,
       CorreoElectronico: CorreoElectronico || null,
       TelefonoMovil: TelefonoMovil || null,
-      IdStatusUsuario: IdStatusUsuario || STATUS_ACTIVO, // Status activo por defecto
+      IdStatusUsuario: IdStatusUsuario || STATUS_ACTIVO,
+      Pregunta,
+      Respuesta,
       IntentosDeAcceso: 0
     };
 
     await usuarioModel.crearUsuario(usuarioData);
 
-    // Registrar el acceso exitoso de registro
     const ipOrigen = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     const navegador = req.headers['user-agent'];
     
     await bitacoraModel.registrarAcceso({
       IdUsuario,
-      IdTipoAcceso: 6, // Tipo de acceso personalizado para registro (puede ajustarse según tabla)
+      IdTipoAcceso: ACCESO_CONCEDIDO,
       DireccionIp: ipOrigen,
       HttpUserAgent: navegador,
       Acceso: 'Registro de nuevo usuario'
@@ -243,7 +261,7 @@ async function cambiarContraseña(req, res) {
     
     await bitacoraModel.registrarAcceso({
       IdUsuario,
-      IdTipoAcceso: 7, // Tipo de acceso personalizado para cambio de contraseña
+      IdTipoAcceso: ACCESO_CONCEDIDO,
       DireccionIp: ipOrigen,
       HttpUserAgent: navegador,
       Acceso: 'Cambio de contraseña exitoso'
@@ -367,7 +385,7 @@ async function resetearContraseña(req, res) {
     
     await bitacoraModel.registrarAcceso({
       IdUsuario,
-      IdTipoAcceso: 8, // Tipo de acceso para reset de contraseña olvidada
+      IdTipoAcceso: ACCESO_CONCEDIDO,
       DireccionIp: ipOrigen,
       HttpUserAgent: navegador,
       Acceso: 'Reset de contraseña olvidada exitoso'

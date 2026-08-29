@@ -173,6 +173,34 @@ import { Usuario, Empresa, Genero, StatusUsuario } from '../models/index';
                   Status is required
                 </div>
               </div>
+
+              <!-- Security Question (col-span-2) -->
+              <div class="col-span-2">
+                <label class="block text-gray-300 text-sm font-semibold mb-2">Security Question</label>
+                <input
+                  type="text"
+                  formControlName="Pregunta"
+                  class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-blue-500"
+                  placeholder="e.g. ¿Nombre de tu primera mascota?"
+                />
+                <div *ngIf="userForm.get('Pregunta')?.touched && userForm.get('Pregunta')?.hasError('required')" class="text-red-400 text-xs mt-1">
+                  Security question is required
+                </div>
+              </div>
+
+              <!-- Security Answer (col-span-2) -->
+              <div class="col-span-2">
+                <label class="block text-gray-300 text-sm font-semibold mb-2">Security Answer</label>
+                <input
+                  type="text"
+                  formControlName="Respuesta"
+                  class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-blue-500"
+                  placeholder="Your answer"
+                />
+                <div *ngIf="userForm.get('Respuesta')?.touched && userForm.get('Respuesta')?.hasError('required')" class="text-red-400 text-xs mt-1">
+                  Security answer is required
+                </div>
+              </div>
             </div>
 
             <!-- Success/Error Messages -->
@@ -250,7 +278,9 @@ export class CreateUserComponent implements OnInit, OnDestroy {
       IdGenero: ['', Validators.required],
       IdSucursal: ['', Validators.required],
       IdRole: ['', Validators.required],
-      IdStatusUsuario: ['', Validators.required]
+      IdStatusUsuario: ['', Validators.required],
+      Pregunta: ['', Validators.required],
+      Respuesta: ['', Validators.required]
     });
   }
 
@@ -314,7 +344,9 @@ export class CreateUserComponent implements OnInit, OnDestroy {
       IdGenero: parseInt(formValue.IdGenero),
       IdSucursal: parseInt(formValue.IdSucursal),
       IdRole: parseInt(formValue.IdRole),
-      IdStatusUsuario: parseInt(formValue.IdStatusUsuario)
+      IdStatusUsuario: parseInt(formValue.IdStatusUsuario),
+      Pregunta: formValue.Pregunta,
+      Respuesta: formValue.Respuesta
     };
 
     this.apiService.registroPublico(usuario)

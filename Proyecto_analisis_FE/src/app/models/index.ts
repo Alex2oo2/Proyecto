@@ -6,14 +6,16 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   token: string;
+  mensaje: string;
+  requiereCambiarPassword: boolean;
   usuario: {
     IdUsuario: string;
     Nombre: string;
     Apellido: string;
     IdRole: number;
     NombreRole: string;
+    CorreoElectronico?: string;
   };
-  mensaje: string;
 }
 
 export interface Empresa {
@@ -53,8 +55,10 @@ export interface Usuario {
   Password?: string;
   IdGenero: number;
   CorreoElectronico?: string;
-  TelefonoMovil?: string;
+  TelefonoMovil?: string | null;
   IdSucursal: number;
   IdRole: number;
   IdStatusUsuario?: number;
+  Pregunta?: string;
+  Respuesta?: string;
 }
