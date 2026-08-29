@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { ApiService } from '../services/api.service';
 import { CompaniesComponent } from './companies.component';
@@ -11,7 +11,7 @@ import { takeUntil } from 'rxjs/operators';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, CompaniesComponent, BranchesComponent],
+  imports: [CommonModule, RouterModule, CompaniesComponent, BranchesComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })

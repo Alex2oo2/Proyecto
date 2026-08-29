@@ -187,4 +187,13 @@ export class ApiService {
       usuario
     ).pipe(catchError(error => this.handleError(error)));
   }
+
+  // ============ PASSWORD ============
+  cambiarContraseña(data: { IdUsuario: string; currentPassword: string; newPassword: string }): Observable<any> {
+    return this.http.post(
+      `${this.apiUrl}/auth/change-password`,
+      data,
+      { headers: this.getHeaders() }
+    ).pipe(catchError(error => this.handleError(error)));
+  }
 }

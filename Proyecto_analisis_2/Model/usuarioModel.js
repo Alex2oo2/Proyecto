@@ -97,6 +97,15 @@ async function crearUsuario(usuario) {
   ]);
 }
 
+async function actualizarContraseña(idUsuario, hashedPassword) {
+  const sql = `
+    UPDATE USUARIO 
+    SET Password = ?, FechaModificacion = NOW() 
+    WHERE IdUsuario = ?
+  `;
+  await db.query(sql, [hashedPassword, idUsuario]);
+}
+
 module.exports = {
   buscarParaLogin,
   obtenerPorId,
@@ -104,5 +113,6 @@ module.exports = {
   bloquearUsuario,
   registrarLoginExitoso,
   cerrarSesion,
-  crearUsuario
+  crearUsuario,
+  actualizarContraseña
 };

@@ -190,4 +190,75 @@ async function register(req, res) {
   }
 }
 
-module.exports = { login, logout, register };
+// Cambiar contraseña de usuario autenticado
+async function cambiarContraseña(req, res) {
+  const { IdUsuario, currentPassword, newPassword } = req.body;
+  const usuarioTokenId = req.usuario?.IdUsuario; // Del token JWT
+
+  // Verificar que el usuario en el token coincida con el que quiere cambiar contraseña
+  if (usuarioTokenId !== IdUsuario) {
+    return res.status(403).json({ 
+      mensaje: 'No puedes cambiar la contraseña de otro usuario' 
+    });
+  }
+
+  if (!currentPassword || !newPassword) {
+    return res.status(400).json({ 
+      mensaje: 'Se requieren la contraseña actual y la nueva contraseña' 
+    });
+  }
+
+  if (newPassword.length < 6) {
+    return res.status(400).json({ 
+      mensaje: 'La nueva contraseña debe tener al menos 6 caracteres' 
+    });
+  }
+
+  try {
+    const usuario = await usuarioModel.obtenerPorId(IdUsuario);
+
+    if (!usuario) {
+      return res.status(404).json({ 
+        mensaje: 'Usuario no encontrado' 
+      });
+    }
+
+    // Verificar que la contraseña actual sea correcta
+    const passwordValida = await bcrypt.compare(currentPassword, usuario.Password);
+    if (!passwordValida) {
+      return res.status(401).json({ 
+        mensaje: 'Contraseña actual incorrecta' 
+      });
+    }
+
+    // Hash la nueva contraseña
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Actualizar la contraseña en la base de datos
+    await usuarioModel.actualizarContraseña(IdUsuario, hashedPassword);
+
+    // Registrar en bitacora
+    const ipOrigen = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    const navegador = req.headers['user-agent'];
+    
+    await bitacoraModel.registrarAcceso({
+      IdUsuario,
+      IdTipoAcceso: 7, // Tipo de acceso personalizado para cambio de contraseña
+      DireccionIp: ipOrigen,
+      HttpUserAgent: navegador,
+      Acceso: 'Cambio de contraseña exitoso'
+    });
+
+    res.json({ 
+      mensaje: '¡Contraseña actualizada exitosamente!' 
+    });
+
+  } catch (error) {
+    console.error('Error al cambiar contraseña:', error);
+    res.status(500).json({ 
+      error: error.message || 'Error al cambiar contraseña' 
+    });
+  }
+}
+
+module.exports = { login, logout, register, cambiarContraseña };
