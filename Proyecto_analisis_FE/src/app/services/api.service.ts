@@ -196,4 +196,27 @@ export class ApiService {
       { headers: this.getHeaders() }
     ).pipe(catchError(error => this.handleError(error)));
   }
+
+  // Forgot password - get security question
+  obtenerPreguntaSeguridad(idUsuario: string): Observable<any> {
+    return this.http.get(
+      `${this.apiUrl}/auth/security-question/${idUsuario}`
+    ).pipe(catchError(error => this.handleError(error)));
+  }
+
+  // Verify security answer
+  verificarRespuestaSeguridad(idUsuario: string, answer: string): Observable<any> {
+    return this.http.post(
+      `${this.apiUrl}/auth/verify-answer`,
+      { IdUsuario: idUsuario, Respuesta: answer }
+    ).pipe(catchError(error => this.handleError(error)));
+  }
+
+  // Reset password after security question verification
+  resetearContraseña(data: { IdUsuario: string; newPassword: string }): Observable<any> {
+    return this.http.post(
+      `${this.apiUrl}/auth/reset-password`,
+      data
+    ).pipe(catchError(error => this.handleError(error)));
+  }
 }

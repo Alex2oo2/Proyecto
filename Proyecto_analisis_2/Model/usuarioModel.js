@@ -16,7 +16,7 @@ async function buscarParaLogin(idUsuario, password) {
 async function obtenerPorId(idUsuario) {
   const sql = `
     SELECT u.IdUsuario, u.Password, u.Nombre, u.Apellido, u.CorreoElectronico, u.IdStatusUsuario, 
-           u.IntentosDeAcceso, u.FechaModificacion, u.IdRole, r.Nombre as NombreRole
+           u.IntentosDeAcceso, u.FechaModificacion, u.IdRole, r.Nombre as NombreRole, u.Pregunta, u.Respuesta
     FROM USUARIO u
     INNER JOIN ROLE r ON u.IdRole = r.IdRole
     WHERE u.IdUsuario = ?

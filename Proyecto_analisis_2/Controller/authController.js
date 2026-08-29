@@ -261,4 +261,128 @@ async function cambiarContraseña(req, res) {
   }
 }
 
-module.exports = { login, logout, register, cambiarContraseña };
+// Forgot password - Get security question
+async function obtenerPreguntaSeguridad(req, res) {
+  const { idUsuario } = req.params;
+
+  try {
+    const usuario = await usuarioModel.obtenerPorId(idUsuario);
+
+    if (!usuario) {
+      return res.status(404).json({ 
+        mensaje: 'Usuario no encontrado' 
+      });
+    }
+
+    if (!usuario.Pregunta) {
+      return res.status(400).json({ 
+        mensaje: 'Este usuario no tiene una pregunta de seguridad configurada' 
+      });
+    }
+
+    res.json({ 
+      pregunta: usuario.Pregunta 
+    });
+
+  } catch (error) {
+    console.error('Error al obtener pregunta de seguridad:', error);
+    res.status(500).json({ 
+      error: error.message || 'Error al obtener pregunta de seguridad' 
+    });
+  }
+}
+
+// Verify security answer
+async function verificarRespuesta(req, res) {
+  const { IdUsuario, Respuesta } = req.body;
+
+  if (!IdUsuario || !Respuesta) {
+    return res.status(400).json({ 
+      mensaje: 'Usuario y respuesta son requeridos' 
+    });
+  }
+
+  try {
+    const usuario = await usuarioModel.obtenerPorId(IdUsuario);
+
+    if (!usuario) {
+      return res.status(404).json({ 
+        mensaje: 'Usuario no encontrado' 
+      });
+    }
+
+    // Verificar que la respuesta coincida (case-insensitive)
+    if (usuario.Respuesta.toLowerCase() !== Respuesta.toLowerCase()) {
+      return res.status(401).json({ 
+        mensaje: 'Respuesta incorrecta' 
+      });
+    }
+
+    res.json({ 
+      mensaje: 'Respuesta verificada correctamente' 
+    });
+
+  } catch (error) {
+    console.error('Error al verificar respuesta:', error);
+    res.status(500).json({ 
+      error: error.message || 'Error al verificar respuesta' 
+    });
+  }
+}
+
+// Reset password (public endpoint, no auth required)
+async function resetearContraseña(req, res) {
+  const { IdUsuario, newPassword } = req.body;
+
+  if (!IdUsuario || !newPassword) {
+    return res.status(400).json({ 
+      mensaje: 'Usuario y nueva contraseña son requeridos' 
+    });
+  }
+
+  if (newPassword.length < 6) {
+    return res.status(400).json({ 
+      mensaje: 'La contraseña debe tener al menos 6 caracteres' 
+    });
+  }
+
+  try {
+    const usuario = await usuarioModel.obtenerPorId(IdUsuario);
+
+    if (!usuario) {
+      return res.status(404).json({ 
+        mensaje: 'Usuario no encontrado' 
+      });
+    }
+
+    // Hash la nueva contraseña
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Actualizar la contraseña
+    await usuarioModel.actualizarContraseña(IdUsuario, hashedPassword);
+
+    // Registrar en bitacora
+    const ipOrigen = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    const navegador = req.headers['user-agent'];
+    
+    await bitacoraModel.registrarAcceso({
+      IdUsuario,
+      IdTipoAcceso: 8, // Tipo de acceso para reset de contraseña olvidada
+      DireccionIp: ipOrigen,
+      HttpUserAgent: navegador,
+      Acceso: 'Reset de contraseña olvidada exitoso'
+    });
+
+    res.json({ 
+      mensaje: '¡Contraseña actualizada exitosamente! Ya puedes iniciar sesión.' 
+    });
+
+  } catch (error) {
+    console.error('Error al resetear contraseña:', error);
+    res.status(500).json({ 
+      error: error.message || 'Error al resetear contraseña' 
+    });
+  }
+}
+
+module.exports = { login, logout, register, cambiarContraseña, obtenerPreguntaSeguridad, verificarRespuesta, resetearContraseña };
