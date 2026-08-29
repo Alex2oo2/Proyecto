@@ -8,7 +8,6 @@ async function obtenerMatrizPermisos(idRole, idModulo) {
       o.IdOpcion, 
       o.Nombre AS NombreOpcion, 
       m.Nombre AS NombreMenu,
-      COALESCE(ro.Consultar, 0) AS Consultar,
       COALESCE(ro.Alta, 0) AS Alta,
       COALESCE(ro.Baja, 0) AS Baja,
       COALESCE(ro.Cambio, 0) AS Cambio,
@@ -26,14 +25,13 @@ async function obtenerMatrizPermisos(idRole, idModulo) {
 
 // 2. Guardar/Actualizar permisos desde la pantalla (Bulk Upsert)
 async function guardarPermiso(datos) {
-  const { IdRole, IdOpcion, Consultar, Alta, Baja, Cambio, Imprimir, Exportar, Usuario } = datos;
+  const { IdRole, IdOpcion, Alta, Baja, Cambio, Imprimir, Exportar, Usuario } = datos;
   
   // Utiliza INSERT ... ON DUPLICATE KEY UPDATE para insertar si no existe, o actualizar si ya existe.
   const sql = `
-    INSERT INTO ROLE_OPCION (IdRole, IdOpcion, Consultar, Alta, Baja, Cambio, Imprimir, Exportar, FechaCreacion, UsuarioCreacion)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)
+    INSERT INTO ROLE_OPCION (IdRole, IdOpcion, Alta, Baja, Cambio, Imprimir, Exportar, FechaCreacion, UsuarioCreacion)
+    VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), ?)
     ON DUPLICATE KEY UPDATE 
-      Consultar = VALUES(Consultar), 
       Alta = VALUES(Alta), 
       Baja = VALUES(Baja), 
       Cambio = VALUES(Cambio), 
@@ -42,16 +40,28 @@ async function guardarPermiso(datos) {
       FechaModificacion = NOW(),
       UsuarioModificacion = ?
   `;
-  await db.query(sql, [IdRole, IdOpcion, Consultar, Alta, Baja, Cambio, Imprimir, Exportar, Usuario, Usuario]);
+  await db.query(sql, [IdRole, IdOpcion, Alta, Baja, Cambio, Imprimir, Exportar, Usuario, Usuario]);
 }
 
 async function verificarPermiso(idRole, nombreOpcion, tipoPermiso) {
-  const sql = `
-    SELECT ro.${tipoPermiso} as TienePermiso
-    FROM ROLE_OPCION ro
-    INNER JOIN OPCION o ON ro.IdOpcion = o.IdOpcion
-    WHERE ro.IdRole = ? AND o.Nombre = ?
-  `;
+  // If Consultar is requested, check if user has ANY permission (Alta, Baja, Cambio, Imprimir, or Exportar)
+  // Otherwise, check the specific permission type
+  let sql;
+  if (tipoPermiso === 'Consultar') {
+    sql = `
+      SELECT (ro.Alta OR ro.Baja OR ro.Cambio OR ro.Imprimir OR ro.Exportar) as TienePermiso
+      FROM ROLE_OPCION ro
+      INNER JOIN OPCION o ON ro.IdOpcion = o.IdOpcion
+      WHERE ro.IdRole = ? AND o.Nombre = ?
+    `;
+  } else {
+    sql = `
+      SELECT ro.${tipoPermiso} as TienePermiso
+      FROM ROLE_OPCION ro
+      INNER JOIN OPCION o ON ro.IdOpcion = o.IdOpcion
+      WHERE ro.IdRole = ? AND o.Nombre = ?
+    `;
+  }
   const [rows] = await db.query(sql, [idRole, nombreOpcion]);
   return rows.length > 0 ? rows[0].TienePermiso : 0;
 }
