@@ -1,0 +1,65 @@
+<div class="min-h-screen bg-gray-900 p-8">
+  <div class="max-w-7xl mx-auto">
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-4xl font-bold text-white">Gestión de Menús</h1>
+      <button 
+        (click)="toggleForm()"
+        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition">
+        {{ showForm ? 'Cancelar' : 'Nuevo Menú' }}
+      </button>
+    </div>
+
+    <div *ngIf="error" class="bg-red-600 text-white p-4 rounded mb-4">{{ error }}</div>
+    <div *ngIf="success" class="bg-green-600 text-white p-4 rounded mb-4">{{ success }}</div>
+
+    <div *ngIf="showForm" class="bg-gray-800 p-6 rounded-lg mb-8 border border-gray-700">
+      <h2 class="text-2xl font-bold text-white mb-6">{{ isEditMode ? 'Editar Menú' : 'Nuevo Menú' }}</h2>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="grid grid-cols-1 gap-4">
+        <div>
+          <label class="block text-gray-300 mb-2">Módulo</label>
+          <select formControlName="IdModulo" class="w-full bg-gray-700 border border-gray-600 text-white px-3 py-2 rounded">
+            <option value="">Selecciona...</option>
+            <option *ngFor="let m of modulos" [value]="m.IdModulo">{{ m.Nombre }}</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-gray-300 mb-2">Nombre</label>
+          <input formControlName="Nombre" type="text" class="w-full bg-gray-700 border border-gray-600 text-white px-3 py-2 rounded">
+        </div>
+        <div>
+          <label class="block text-gray-300 mb-2">Orden</label>
+          <input formControlName="OrdenMenu" type="number" class="w-full bg-gray-700 border border-gray-600 text-white px-3 py-2 rounded">
+        </div>
+        <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded transition">
+          {{ isEditMode ? 'Actualizar' : 'Crear' }} Menú
+        </button>
+      </form>
+    </div>
+
+    <div class="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
+      <table class="w-full">
+        <thead class="bg-gray-700">
+          <tr>
+            <th class="px-6 py-3 text-left text-gray-300">ID</th>
+            <th class="px-6 py-3 text-left text-gray-300">Nombre</th>
+            <th class="px-6 py-3 text-left text-gray-300">Módulo</th>
+            <th class="px-6 py-3 text-left text-gray-300">Orden</th>
+            <th class="px-6 py-3 text-left text-gray-300">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let menu of menus" class="border-t border-gray-700 hover:bg-gray-700">
+            <td class="px-6 py-3 text-gray-300">{{ menu.IdMenu }}</td>
+            <td class="px-6 py-3 text-gray-300">{{ menu.Nombre }}</td>
+            <td class="px-6 py-3 text-gray-300">{{ getNombreModulo(menu.IdModulo) }}</td>
+            <td class="px-6 py-3 text-gray-300">{{ menu.OrdenMenu }}</td>
+            <td class="px-6 py-3 text-gray-300">
+              <button (click)="editItem(menu)" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded mr-2">Editar</button>
+              <button (click)="deleteItem(menu.IdMenu)" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded">Eliminar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

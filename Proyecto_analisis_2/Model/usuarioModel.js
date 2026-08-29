@@ -97,13 +97,55 @@ async function crearUsuario(usuario) {
   ]);
 }
 
-async function actualizarContraseña(idUsuario, hashedPassword) {
+async function actualizarContraseña(idUsuario, hashedPassword, clearRequiereCambiar = false) {
   const sql = `
     UPDATE USUARIO 
-    SET Password = ?, FechaModificacion = NOW() 
+    SET Password = ?, UltimaFechaCambioPassword = NOW(), 
+        RequiereCambiarPassword = ?, FechaModificacion = NOW() 
     WHERE IdUsuario = ?
   `;
-  await db.query(sql, [hashedPassword, idUsuario]);
+  const requireChange = clearRequiereCambiar ? 0 : 1;
+  await db.query(sql, [hashedPassword, requireChange, idUsuario]);
+}
+
+async function obtenerTodos() {
+  const sql = `
+    SELECT u.IdUsuario, u.Nombre, u.Apellido, u.CorreoElectronico, u.IdStatusUsuario, 
+           u.IdGenero, u.TelefonoMovil, u.IdSucursal, u.IdRole, u.FechaCreacion, 
+           r.Nombre as NombreRole, s.Nombre as NombreStatus
+    FROM USUARIO u
+    INNER JOIN ROLE r ON u.IdRole = r.IdRole
+    INNER JOIN STATUS_USUARIO s ON u.IdStatusUsuario = s.IdStatusUsuario
+    ORDER BY u.FechaCreacion DESC
+  `;
+  const [rows] = await db.query(sql);
+  return rows;
+}
+
+async function actualizar(idUsuario, usuario) {
+  const { 
+    Nombre, Apellido, CorreoElectronico, TelefonoMovil, IdGenero, 
+    IdSucursal, IdRole, IdStatusUsuario, UsuarioModificacion 
+  } = usuario;
+  
+  const sql = `
+    UPDATE USUARIO 
+    SET Nombre = ?, Apellido = ?, CorreoElectronico = ?, 
+        TelefonoMovil = ?, IdGenero = ?, IdSucursal = ?, 
+        IdRole = ?, IdStatusUsuario = ?, FechaModificacion = NOW(), 
+        UsuarioModificacion = ?
+    WHERE IdUsuario = ?
+  `;
+  
+  await db.query(sql, [
+    Nombre, Apellido, CorreoElectronico, TelefonoMovil, IdGenero,
+    IdSucursal, IdRole, IdStatusUsuario, UsuarioModificacion, idUsuario
+  ]);
+}
+
+async function eliminar(idUsuario) {
+  const sql = `DELETE FROM USUARIO WHERE IdUsuario = ?`;
+  await db.query(sql, [idUsuario]);
 }
 
 module.exports = {
@@ -114,5 +156,8 @@ module.exports = {
   registrarLoginExitoso,
   cerrarSesion,
   crearUsuario,
-  actualizarContraseña
+  actualizarContraseña,
+  obtenerTodos,
+  actualizar,
+  eliminar
 };

@@ -23,37 +23,28 @@
     </div>
   </header>
 
-  <!-- Navigation Tabs -->
-  <nav class="bg-gray-800 border-b border-gray-700">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-8">
-      <button
-        (click)="setActiveTab('companies')"
-        [class.border-blue-500]="activeTab === 'companies'"
-        [class.text-white]="activeTab === 'companies'"
-        [class.text-gray-400]="activeTab !== 'companies'"
-        class="py-4 border-b-2 border-transparent font-medium transition duration-200 hover:text-white"
-      >
-        Empresas
-      </button>
-      <button
-        (click)="setActiveTab('branches')"
-        [class.border-blue-500]="activeTab === 'branches'"
-        [class.text-white]="activeTab === 'branches'"
-        [class.text-gray-400]="activeTab !== 'branches'"
-        class="py-4 border-b-2 border-transparent font-medium transition duration-200 hover:text-white"
-      >
-        Sucursales
-      </button>
+  <!-- Navigation Sidebar -->
+  <div class="bg-gray-800 border-b border-gray-700 p-4">
+    <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+      <a routerLink="/empresas" class="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded transition">Empresas</a>
+      <a routerLink="/sucursales" class="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded transition">Sucursales</a>
+      <a routerLink="/usuarios" class="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded transition">Usuarios</a>
+      <a routerLink="/roles" class="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded transition">Roles</a>
+      <a routerLink="/modulos" class="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded transition">Módulos</a>
+      <a routerLink="/menus" class="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded transition">Menús</a>
+      <a routerLink="/opciones" class="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded transition">Opciones</a>
+      <button (click)="logout()" class="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded transition text-left">Salir</button>
     </div>
-  </nav>
+  </div>
 
   <!-- Content -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div *ngIf="activeTab === 'companies'">
-      <app-companies></app-companies>
-    </div>
-    <div *ngIf="activeTab === 'branches'">
-      <app-branches></app-branches>
+    <router-outlet></router-outlet>
+    
+    <!-- Welcome Message -->
+    <div *ngIf="currentUser" class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+      <h2 class="text-2xl font-bold text-white mb-2">Bienvenido, {{ currentUser.Nombre }} {{ currentUser.Apellido }}</h2>
+      <p class="text-gray-400">Rol: {{ currentUser.NombreRole }}</p>
     </div>
   </main>
 </div>

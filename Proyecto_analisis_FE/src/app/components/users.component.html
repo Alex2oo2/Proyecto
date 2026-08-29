@@ -1,0 +1,159 @@
+<div class="min-h-screen bg-gray-900 p-8">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-4xl font-bold text-white">Gestión de Usuarios</h1>
+      <button 
+        (click)="toggleForm()"
+        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition">
+        {{ showForm ? 'Cancelar' : 'Agregar Usuario' }}
+      </button>
+    </div>
+
+    <!-- Messages -->
+    <div *ngIf="error" class="bg-red-600 text-white p-4 rounded mb-4">
+      {{ error }}
+    </div>
+    <div *ngIf="success" class="bg-green-600 text-white p-4 rounded mb-4">
+      {{ success }}
+    </div>
+
+    <!-- Form -->
+    <div *ngIf="showForm" class="bg-gray-800 p-6 rounded-lg mb-8 border border-gray-700">
+      <h2 class="text-2xl font-bold text-white mb-6">
+        {{ isEditMode ? 'Editar Usuario' : 'Nuevo Usuario' }}
+      </h2>
+      
+      <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-gray-300 mb-2">Usuario</label>
+          <input 
+            formControlName="IdUsuario" 
+            type="text" 
+            class="w-full bg-gray-700 border border-gray-600 text-white px-3 py-2 rounded"
+            [attr.disabled]="isEditMode ? true : null">
+        </div>
+
+        <div>
+          <label class="block text-gray-300 mb-2">Nombre</label>
+          <input 
+            formControlName="Nombre" 
+            type="text" 
+            class="w-full bg-gray-700 border border-gray-600 text-white px-3 py-2 rounded">
+        </div>
+
+        <div>
+          <label class="block text-gray-300 mb-2">Apellido</label>
+          <input 
+            formControlName="Apellido" 
+            type="text" 
+            class="w-full bg-gray-700 border border-gray-600 text-white px-3 py-2 rounded">
+        </div>
+
+        <div>
+          <label class="block text-gray-300 mb-2">Email</label>
+          <input 
+            formControlName="CorreoElectronico" 
+            type="email" 
+            class="w-full bg-gray-700 border border-gray-600 text-white px-3 py-2 rounded">
+        </div>
+
+        <div>
+          <label class="block text-gray-300 mb-2">Teléfono</label>
+          <input 
+            formControlName="TelefonoMovil" 
+            type="text" 
+            class="w-full bg-gray-700 border border-gray-600 text-white px-3 py-2 rounded">
+        </div>
+
+        <div>
+          <label class="block text-gray-300 mb-2">Género</label>
+          <select 
+            formControlName="IdGenero" 
+            class="w-full bg-gray-700 border border-gray-600 text-white px-3 py-2 rounded">
+            <option value="">Selecciona...</option>
+            <option *ngFor="let g of generos" [value]="g.IdGenero">{{ g.Nombre }}</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-gray-300 mb-2">Sucursal</label>
+          <select 
+            formControlName="IdSucursal" 
+            class="w-full bg-gray-700 border border-gray-600 text-white px-3 py-2 rounded">
+            <option value="">Selecciona...</option>
+            <option *ngFor="let s of sucursales" [value]="s.IdSucursal">{{ s.Nombre }}</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-gray-300 mb-2">Role</label>
+          <select 
+            formControlName="IdRole" 
+            class="w-full bg-gray-700 border border-gray-600 text-white px-3 py-2 rounded">
+            <option value="">Selecciona...</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-gray-300 mb-2">Estado</label>
+          <select 
+            formControlName="IdStatusUsuario" 
+            class="w-full bg-gray-700 border border-gray-600 text-white px-3 py-2 rounded">
+            <option value="">Selecciona...</option>
+            <option *ngFor="let s of statusUsuarios" [value]="s.IdStatusUsuario">{{ s.Nombre }}</option>
+          </select>
+        </div>
+
+        <div class="col-span-2">
+          <button 
+            type="submit" 
+            class="w-full bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded transition">
+            {{ isEditMode ? 'Actualizar' : 'Crear' }} Usuario
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Table -->
+    <div class="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
+      <table class="w-full">
+        <thead class="bg-gray-700">
+          <tr>
+            <th class="px-6 py-3 text-left text-gray-300">Usuario</th>
+            <th class="px-6 py-3 text-left text-gray-300">Nombre</th>
+            <th class="px-6 py-3 text-left text-gray-300">Apellido</th>
+            <th class="px-6 py-3 text-left text-gray-300">Email</th>
+            <th class="px-6 py-3 text-left text-gray-300">Estado</th>
+            <th class="px-6 py-3 text-left text-gray-300">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let usuario of usuarios" class="border-t border-gray-700 hover:bg-gray-700">
+            <td class="px-6 py-3 text-gray-300">{{ usuario.IdUsuario }}</td>
+            <td class="px-6 py-3 text-gray-300">{{ usuario.Nombre }}</td>
+            <td class="px-6 py-3 text-gray-300">{{ usuario.Apellido }}</td>
+            <td class="px-6 py-3 text-gray-300">{{ usuario.CorreoElectronico }}</td>
+            <td class="px-6 py-3 text-gray-300">{{ getNombreStatus(usuario.IdStatusUsuario || 1) }}</td>
+            <td class="px-6 py-3 text-gray-300">
+              <button 
+                (click)="editUser(usuario)" 
+                class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded mr-2">
+                Editar
+              </button>
+              <button 
+                (click)="deleteUser(usuario.IdUsuario)" 
+                class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded">
+                Eliminar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div *ngIf="usuarios.length === 0 && !loading" class="text-center text-gray-400 mt-8">
+      No hay usuarios registrados
+    </div>
+  </div>
+</div>

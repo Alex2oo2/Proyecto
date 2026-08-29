@@ -1,6 +1,7 @@
 const usuarioModel = require('../Model/usuarioModel.js');
 const bitacoraModel = require('../Model/bitacoraModel.js');
 const empresaModel = require('../Model/empresaModel.js');
+const { validatePasswordPolicy } = require('../utils/passwordValidator.js');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -148,13 +149,15 @@ async function logout(req, res) {
 async function register(req, res) {
   const { 
     IdUsuario, Password, Nombre, Apellido, IdRole,
-    FechaNacimiento, IdGenero, IdSucursal, CorreoElectronico, TelefonoMovil, IdStatusUsuario
+    FechaNacimiento, IdGenero, IdSucursal, CorreoElectronico, TelefonoMovil, 
+    IdStatusUsuario, Pregunta, Respuesta
   } = req.body;
 
   // Validar campos obligatorios
-  if (!IdUsuario || !Password || !Nombre || !Apellido || !IdRole || !FechaNacimiento || !IdGenero || !IdSucursal) {
+  if (!IdUsuario || !Password || !Nombre || !Apellido || !IdRole || !FechaNacimiento || 
+      !IdGenero || !IdSucursal || !Pregunta || !Respuesta) {
     return res.status(400).json({ 
-      mensaje: 'Faltan campos obligatorios: IdUsuario, Password, Nombre, Apellido, IdRole, FechaNacimiento, IdGenero, IdSucursal' 
+      mensaje: 'Faltan campos obligatorios: IdUsuario, Password, Nombre, Apellido, IdRole, FechaNacimiento, IdGenero, IdSucursal, Pregunta, Respuesta' 
     });
   }
 
@@ -163,6 +166,23 @@ async function register(req, res) {
     const usuarioExistente = await usuarioModel.obtenerPorId(IdUsuario);
     if (usuarioExistente) {
       return res.status(409).json({ mensaje: 'El nombre de usuario ya está en uso. Elige otro.' });
+    }
+
+    // Obtener política de contraseña de la empresa (vía sucursal)
+    const politica = await empresaModel.obtenerPoliticasPasswordPorUsuario(IdUsuario);
+    if (!politica) {
+      return res.status(400).json({ 
+        mensaje: 'No se pudo obtener la política de contraseña para la sucursal especificada' 
+      });
+    }
+
+    // Validar la contraseña contra la política de la empresa
+    const validacionPassword = validatePasswordPolicy(Password, politica);
+    if (!validacionPassword.isValid) {
+      return res.status(400).json({ 
+        mensaje: 'La contraseña no cumple con la política de seguridad de la empresa:',
+        errores: validacionPassword.errors
+      });
     }
 
     // Crear usuario con status activo por defecto si no se especifica
@@ -180,7 +200,8 @@ async function register(req, res) {
       IdStatusUsuario: IdStatusUsuario || STATUS_ACTIVO,
       Pregunta,
       Respuesta,
-      IntentosDeAcceso: 0
+      IntentosDeAcceso: 0,
+      UsuarioCreacion: IdUsuario
     };
 
     await usuarioModel.crearUsuario(usuarioData);
@@ -226,12 +247,6 @@ async function cambiarContraseña(req, res) {
     });
   }
 
-  if (newPassword.length < 6) {
-    return res.status(400).json({ 
-      mensaje: 'La nueva contraseña debe tener al menos 6 caracteres' 
-    });
-  }
-
   try {
     const usuario = await usuarioModel.obtenerPorId(IdUsuario);
 
@@ -249,11 +264,28 @@ async function cambiarContraseña(req, res) {
       });
     }
 
+    // Obtener política de contraseña de la empresa
+    const politica = await empresaModel.obtenerPoliticasPasswordPorUsuario(IdUsuario);
+    if (!politica) {
+      return res.status(400).json({ 
+        mensaje: 'No se pudo obtener la política de contraseña' 
+      });
+    }
+
+    // Validar la nueva contraseña contra la política de la empresa
+    const validacionPassword = validatePasswordPolicy(newPassword, politica);
+    if (!validacionPassword.isValid) {
+      return res.status(400).json({ 
+        mensaje: 'La nueva contraseña no cumple con la política de seguridad:',
+        errores: validacionPassword.errors
+      });
+    }
+
     // Hash la nueva contraseña
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    // Actualizar la contraseña en la base de datos
-    await usuarioModel.actualizarContraseña(IdUsuario, hashedPassword);
+    // Actualizar la contraseña (y marcar RequiereCambiarPassword como 0)
+    await usuarioModel.actualizarContraseña(IdUsuario, hashedPassword, true);
 
     // Registrar en bitacora
     const ipOrigen = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
@@ -358,18 +390,29 @@ async function resetearContraseña(req, res) {
     });
   }
 
-  if (newPassword.length < 6) {
-    return res.status(400).json({ 
-      mensaje: 'La contraseña debe tener al menos 6 caracteres' 
-    });
-  }
-
   try {
     const usuario = await usuarioModel.obtenerPorId(IdUsuario);
 
     if (!usuario) {
       return res.status(404).json({ 
         mensaje: 'Usuario no encontrado' 
+      });
+    }
+
+    // Obtener política de contraseña de la empresa
+    const politica = await empresaModel.obtenerPoliticasPasswordPorUsuario(IdUsuario);
+    if (!politica) {
+      return res.status(400).json({ 
+        mensaje: 'No se pudo obtener la política de contraseña' 
+      });
+    }
+
+    // Validar la nueva contraseña contra la política de la empresa
+    const validacionPassword = validatePasswordPolicy(newPassword, politica);
+    if (!validacionPassword.isValid) {
+      return res.status(400).json({ 
+        mensaje: 'La contraseña no cumple con la política de seguridad:',
+        errores: validacionPassword.errors
       });
     }
 

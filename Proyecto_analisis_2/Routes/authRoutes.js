@@ -6,6 +6,7 @@ const { autenticar } = require('../Middleware/autorizacion.js');
 router.post('/login', authController.login);
 router.post('/register', authController.register);
 router.post('/change-password', autenticar, authController.cambiarContraseña);
+router.post('/logout', autenticar, authController.logout);
 
 // Forgot password routes (public - no auth required)
 router.get('/security-question/:idUsuario', authController.obtenerPreguntaSeguridad);

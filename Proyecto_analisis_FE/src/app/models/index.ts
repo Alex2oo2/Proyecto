@@ -62,3 +62,55 @@ export interface Usuario {
   Pregunta?: string;
   Respuesta?: string;
 }
+
+export interface Modulo {
+  IdModulo?: number;
+  Nombre: string;
+  OrdenMenu?: number;
+  Descripcion?: string;
+}
+
+export interface Menu {
+  IdMenu?: number;
+  IdModulo: number;
+  Nombre: string;
+  OrdenMenu?: number;
+  Descripcion?: string;
+}
+
+export interface Opcion {
+  IdOpcion?: number;
+  IdMenu: number;
+  Nombre: string;
+  OrdenMenu?: number;
+  Pagina?: string;
+  Descripcion?: string;
+}
+
+export interface Role {
+  IdRole?: number;
+  Nombre: string;
+  Descripcion?: string;
+}
+
+export interface RoleOpcion {
+  IdRole: number;
+  IdOpcion: number;
+  Alta: number;
+  Baja: number;
+  Cambio: number;
+  Imprimir: number;
+  Exportar: number;
+}
+
+export interface MatrizPermisos {
+  IdOpcion: number;
+  Nombre: string;
+  NombreOpcion: string;
+  NombreMenu: string;
+  Alta: number;
+  Baja: number;
+  Cambio: number;
+  Imprimir: number;
+  Exportar: number;
+}

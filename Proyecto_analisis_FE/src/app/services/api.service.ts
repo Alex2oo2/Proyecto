@@ -8,7 +8,13 @@ import {
   Sucursal,
   Genero,
   StatusUsuario,
-  Usuario
+  Usuario,
+  Modulo,
+  Menu,
+  Opcion,
+  Role,
+  RoleOpcion,
+  MatrizPermisos
 } from '../models/index';
 
 @Injectable({
@@ -217,6 +223,186 @@ export class ApiService {
     return this.http.post(
       `${this.apiUrl}/auth/reset-password`,
       data
+    ).pipe(catchError(error => this.handleError(error)));
+  }
+
+  // Logout
+  logout(): Observable<any> {
+    return this.http.post(
+      `${this.apiUrl}/auth/logout`,
+      {},
+      { headers: this.getHeaders() }
+    ).pipe(catchError(error => this.handleError(error)));
+  }
+
+  // ============ USUARIOS ============
+  getUsuarios(): Observable<Usuario[]> {
+    return this.http.get<Usuario[]>(
+      `${this.apiUrl}/usuario/usuarios`,
+      { headers: this.getHeaders() }
+    ).pipe(catchError(error => this.handleError(error)));
+  }
+
+  getUsuarioById(id: string): Observable<Usuario> {
+    return this.http.get<Usuario>(
+      `${this.apiUrl}/usuario/usuarios/${id}`,
+      { headers: this.getHeaders() }
+    ).pipe(catchError(error => this.handleError(error)));
+  }
+
+  actualizarUsuario(id: string, usuario: Partial<Usuario>): Observable<any> {
+    return this.http.put(
+      `${this.apiUrl}/usuario/usuarios/${id}`,
+      usuario,
+      { headers: this.getHeaders() }
+    ).pipe(catchError(error => this.handleError(error)));
+  }
+
+  eliminarUsuario(id: string): Observable<any> {
+    return this.http.delete(
+      `${this.apiUrl}/usuario/usuarios/${id}`,
+      { headers: this.getHeaders() }
+    ).pipe(catchError(error => this.handleError(error)));
+  }
+
+  // ============ MODULOS ============
+  getModulos(): Observable<Modulo[]> {
+    return this.http.get<Modulo[]>(
+      `${this.apiUrl}/seguridad/modulos`,
+      { headers: this.getHeaders() }
+    ).pipe(catchError(error => this.handleError(error)));
+  }
+
+  crearModulo(modulo: Modulo): Observable<any> {
+    return this.http.post(
+      `${this.apiUrl}/seguridad/modulos`,
+      modulo,
+      { headers: this.getHeaders() }
+    ).pipe(catchError(error => this.handleError(error)));
+  }
+
+  actualizarModulo(id: number, modulo: Modulo): Observable<any> {
+    return this.http.put(
+      `${this.apiUrl}/seguridad/modulos/${id}`,
+      modulo,
+      { headers: this.getHeaders() }
+    ).pipe(catchError(error => this.handleError(error)));
+  }
+
+  eliminarModulo(id: number): Observable<any> {
+    return this.http.delete(
+      `${this.apiUrl}/seguridad/modulos/${id}`,
+      { headers: this.getHeaders() }
+    ).pipe(catchError(error => this.handleError(error)));
+  }
+
+  // ============ MENUS ============
+  getMenus(idModulo?: number): Observable<Menu[]> {
+    let url = `${this.apiUrl}/seguridad/menus`;
+    if (idModulo) {
+      url += `?idModulo=${idModulo}`;
+    }
+    return this.http.get<Menu[]>(
+      url,
+      { headers: this.getHeaders() }
+    ).pipe(catchError(error => this.handleError(error)));
+  }
+
+  crearMenu(menu: Menu): Observable<any> {
+    return this.http.post(
+      `${this.apiUrl}/seguridad/menus`,
+      menu,
+      { headers: this.getHeaders() }
+    ).pipe(catchError(error => this.handleError(error)));
+  }
+
+  actualizarMenu(id: number, menu: Menu): Observable<any> {
+    return this.http.put(
+      `${this.apiUrl}/seguridad/menus/${id}`,
+      menu,
+      { headers: this.getHeaders() }
+    ).pipe(catchError(error => this.handleError(error)));
+  }
+
+  eliminarMenu(id: number): Observable<any> {
+    return this.http.delete(
+      `${this.apiUrl}/seguridad/menus/${id}`,
+      { headers: this.getHeaders() }
+    ).pipe(catchError(error => this.handleError(error)));
+  }
+
+  // ============ OPCIONES ============
+  getOpciones(idMenu?: number): Observable<Opcion[]> {
+    let url = `${this.apiUrl}/seguridad/opciones`;
+    if (idMenu) {
+      url += `?idMenu=${idMenu}`;
+    }
+    return this.http.get<Opcion[]>(
+      url,
+      { headers: this.getHeaders() }
+    ).pipe(catchError(error => this.handleError(error)));
+  }
+
+  crearOpcion(opcion: Opcion): Observable<any> {
+    return this.http.post(
+      `${this.apiUrl}/seguridad/opciones`,
+      opcion,
+      { headers: this.getHeaders() }
+    ).pipe(catchError(error => this.handleError(error)));
+  }
+
+  actualizarOpcion(id: number, opcion: Opcion): Observable<any> {
+    return this.http.put(
+      `${this.apiUrl}/seguridad/opciones/${id}`,
+      opcion,
+      { headers: this.getHeaders() }
+    ).pipe(catchError(error => this.handleError(error)));
+  }
+
+  eliminarOpcion(id: number): Observable<any> {
+    return this.http.delete(
+      `${this.apiUrl}/seguridad/opciones/${id}`,
+      { headers: this.getHeaders() }
+    ).pipe(catchError(error => this.handleError(error)));
+  }
+
+  // ============ ROLES ============
+  crearRole(role: Role): Observable<any> {
+    return this.http.post(
+      `${this.apiUrl}/seguridad/roles`,
+      role,
+      { headers: this.getHeaders() }
+    ).pipe(catchError(error => this.handleError(error)));
+  }
+
+  actualizarRole(id: number, role: Role): Observable<any> {
+    return this.http.put(
+      `${this.apiUrl}/seguridad/roles/${id}`,
+      role,
+      { headers: this.getHeaders() }
+    ).pipe(catchError(error => this.handleError(error)));
+  }
+
+  eliminarRole(id: number): Observable<any> {
+    return this.http.delete(
+      `${this.apiUrl}/seguridad/roles/${id}`,
+      { headers: this.getHeaders() }
+    ).pipe(catchError(error => this.handleError(error)));
+  }
+
+  // ============ PERMISOS (MATRIZ) ============
+  obtenerMatrizPermisos(idRole: number, idModulo: number): Observable<MatrizPermisos[]> {
+    return this.http.get<MatrizPermisos[]>(
+      `${this.apiUrl}/seguridad/permisos/${idRole}/${idModulo}`,
+      { headers: this.getHeaders() }
+    ).pipe(catchError(error => this.handleError(error)));
+  }
+
+  guardarMatrizPermisos(permisos: any[]): Observable<any> {
+    return this.http.post(
+      `${this.apiUrl}/seguridad/permisos`,
+      permisos,
+      { headers: this.getHeaders() }
     ).pipe(catchError(error => this.handleError(error)));
   }
 }
