@@ -11,6 +11,25 @@ async function obtenerEmpresas(req, res) {
 }
 
 async function crearEmpresa(req, res) {
+  const camposRequeridos = [
+    'Nombre', 'Direccion', 'Nit', 'PasswordCantidadMayusculas',
+    'PasswordCantidadMinusculas', 'PasswordCantidadCaracteresEspeciales',
+    'PasswordCantidadCaducidadDias', 'PasswordLargo',
+    'PasswordIntentosAntesDeBloquear', 'PasswordCantidadNumeros',
+    'PasswordCantidadPreguntasValidar'
+  ];
+
+  const faltaCampo = camposRequeridos.some((campo) => {
+    const valor = req.body[campo];
+    return valor === undefined || valor === null || valor === '';
+  });
+
+  if (faltaCampo) {
+    return res.status(400).json({
+      mensaje: 'Faltan campos obligatorios para crear la empresa'
+    });
+  }
+
   try {
     const datos = { ...req.body, UsuarioCreacion: req.usuario.IdUsuario };
     const id = await empresaModel.crear(datos);

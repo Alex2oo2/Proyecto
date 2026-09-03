@@ -33,8 +33,7 @@ export class RolesComponent implements OnInit {
     private fb: FormBuilder
   ) {
     this.roleForm = this.fb.group({
-      Nombre: ['', Validators.required],
-      Descripcion: ['']
+      Nombre: ['', Validators.required]
     });
   }
 

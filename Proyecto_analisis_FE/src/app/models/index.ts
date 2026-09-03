@@ -22,30 +22,32 @@ export interface Empresa {
   IdEmpresa?: number;
   Nombre: string;
   Nit: string;
-  Descripcion?: string;
-  Direccion?: string;
-  Telefono?: string;
-  CorreoElectronico?: string;
+  Direccion: string;
+  PasswordCantidadMayusculas: number;
+  PasswordCantidadMinusculas: number;
+  PasswordCantidadCaracteresEspeciales: number;
+  PasswordCantidadCaducidadDias: number;
+  PasswordLargo: number;
+  PasswordIntentosAntesDeBloquear: number;
+  PasswordCantidadNumeros: number;
+  PasswordCantidadPreguntasValidar: number;
 }
 
 export interface Sucursal {
   IdSucursal?: number;
   IdEmpresa: number;
   Nombre: string;
-  Descripcion?: string;
-  Direccion?: string;
+  Direccion: string;
 }
 
 export interface Genero {
   IdGenero?: number;
   Nombre: string;
-  Descripcion?: string;
 }
 
 export interface StatusUsuario {
   IdStatusUsuario?: number;
   Nombre: string;
-  Descripcion?: string;
 }
 
 export interface Usuario {
@@ -62,36 +64,33 @@ export interface Usuario {
   IdStatusUsuario?: number;
   Pregunta: string;
   Respuesta: string;
+  RequiereCambiarPassword?: number | boolean;
 }
 
 export interface Modulo {
   IdModulo?: number;
   Nombre: string;
-  OrdenMenu?: number;
-  Descripcion?: string;
+  OrdenMenu: number;
 }
 
 export interface Menu {
   IdMenu?: number;
   IdModulo: number;
   Nombre: string;
-  OrdenMenu?: number;
-  Descripcion?: string;
+  OrdenMenu: number;
 }
 
 export interface Opcion {
   IdOpcion?: number;
   IdMenu: number;
   Nombre: string;
-  OrdenMenu?: number;
-  Pagina?: string;
-  Descripcion?: string;
+  OrdenMenu: number;
+  Pagina: string;
 }
 
 export interface Role {
   IdRole?: number;
   Nombre: string;
-  Descripcion?: string;
 }
 
 export interface RoleOpcion {

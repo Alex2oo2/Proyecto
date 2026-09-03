@@ -61,24 +61,10 @@
         />
       </div>
 
-      <!-- Descripcion -->
-      <div>
-        <label for="descripcion" class="block text-sm font-medium text-gray-300 mb-2">
-          Descripción
-        </label>
-        <textarea
-          id="descripcion"
-          formControlName="Descripcion"
-          placeholder="Descripción de la sucursal"
-          rows="3"
-          class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
-        ></textarea>
-      </div>
-
       <!-- Dirección -->
       <div>
         <label for="direccion" class="block text-sm font-medium text-gray-300 mb-2">
-          Dirección
+          Dirección <span class="text-red-500">*</span>
         </label>
         <input
           id="direccion"
@@ -86,6 +72,7 @@
           formControlName="Direccion"
           placeholder="Dirección de la sucursal"
           class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+          [class.border-red-500]="form.get('Direccion')?.invalid && form.get('Direccion')?.touched"
         />
       </div>
 
@@ -121,7 +108,6 @@
         <div class="flex-1">
           <h3 class="text-lg font-semibold text-white">{{ sucursal.Nombre }}</h3>
           <p class="text-gray-400 text-sm">Empresa: {{ getEmpresaNombre(sucursal.IdEmpresa) }}</p>
-          <p *ngIf="sucursal.Descripcion" class="text-gray-400 text-sm mt-1">{{ sucursal.Descripcion }}</p>
           <div class="flex flex-wrap gap-4 mt-3 text-sm text-gray-400">
             <span *ngIf="sucursal.Direccion">{{ sucursal.Direccion }}</span>
           </div>

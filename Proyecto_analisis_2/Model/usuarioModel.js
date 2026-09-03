@@ -64,7 +64,7 @@ async function crearUsuario(usuario) {
   const { 
     IdUsuario, Nombre, Apellido, FechaNacimiento, Password, 
     IdGenero, CorreoElectronico, TelefonoMovil, IdSucursal, 
-    Pregunta, Respuesta, IdRole, UsuarioCreacion 
+    Pregunta, Respuesta, IdRole, RequiereCambiarPassword, UsuarioCreacion 
   } = usuario;
   
   const salt = await bcrypt.genSalt(10);
@@ -81,7 +81,7 @@ async function crearUsuario(usuario) {
     VALUES (
       ?, ?, ?, ?, 1, 
       ?, ?, 0, ?, 
-      0, ?, ?, 
+      ?, ?, ?, 
       ?, ?, ?, NOW(), 
       ?, NOW(), ?
     )
@@ -93,7 +93,7 @@ async function crearUsuario(usuario) {
     IdUsuario, Nombre, Apellido, FechaNacimiento, 
     hashedPassword, IdGenero, CorreoElectronico, 
     TelefonoMovil, IdSucursal, Pregunta, Respuesta, 
-    IdRole, creador, creador
+    IdRole, RequiereCambiarPassword ? 1 : 0, creador, creador
   ]);
 }
 
@@ -111,7 +111,7 @@ async function actualizarContraseña(idUsuario, hashedPassword, clearRequiereCam
 async function obtenerTodos() {
   const sql = `
     SELECT u.IdUsuario, u.Nombre, u.Apellido, u.CorreoElectronico, u.IdStatusUsuario, 
-           u.IdGenero, u.TelefonoMovil, u.IdSucursal, u.IdRole, u.FechaCreacion, 
+           u.IdGenero, u.TelefonoMovil, u.IdSucursal, u.IdRole, u.RequiereCambiarPassword, u.FechaCreacion, 
            r.Nombre as NombreRole, s.Nombre as NombreStatus
     FROM USUARIO u
     INNER JOIN ROLE r ON u.IdRole = r.IdRole
@@ -125,21 +125,21 @@ async function obtenerTodos() {
 async function actualizar(idUsuario, usuario) {
   const { 
     Nombre, Apellido, CorreoElectronico, TelefonoMovil, IdGenero, 
-    IdSucursal, IdRole, IdStatusUsuario, UsuarioModificacion 
+    IdSucursal, IdRole, IdStatusUsuario, RequiereCambiarPassword, UsuarioModificacion 
   } = usuario;
   
   const sql = `
     UPDATE USUARIO 
     SET Nombre = ?, Apellido = ?, CorreoElectronico = ?, 
         TelefonoMovil = ?, IdGenero = ?, IdSucursal = ?, 
-        IdRole = ?, IdStatusUsuario = ?, FechaModificacion = NOW(), 
+        IdRole = ?, IdStatusUsuario = ?, RequiereCambiarPassword = ?, FechaModificacion = NOW(), 
         UsuarioModificacion = ?
     WHERE IdUsuario = ?
   `;
   
   await db.query(sql, [
     Nombre, Apellido, CorreoElectronico, TelefonoMovil, IdGenero,
-    IdSucursal, IdRole, IdStatusUsuario, UsuarioModificacion, idUsuario
+    IdSucursal, IdRole, IdStatusUsuario, RequiereCambiarPassword ? 1 : 0, UsuarioModificacion, idUsuario
   ]);
 }
 

@@ -43,7 +43,8 @@ export class UsersComponent implements OnInit {
       IdRole: ['', Validators.required],
       IdStatusUsuario: ['', Validators.required],
       Pregunta: ['', Validators.required],
-      Respuesta: ['', Validators.required]
+      Respuesta: ['', Validators.required],
+      RequiereCambiarPassword: [true]
     });
   }
 
@@ -92,7 +93,8 @@ export class UsersComponent implements OnInit {
       IdRole: usuario.IdRole,
       IdStatusUsuario: usuario.IdStatusUsuario,
       Pregunta: usuario.Pregunta,
-      Respuesta: usuario.Respuesta
+      Respuesta: usuario.Respuesta,
+      RequiereCambiarPassword: usuario.RequiereCambiarPassword === 1
     });
     this.userForm.get('IdUsuario')?.disable();
     this.showForm = true;

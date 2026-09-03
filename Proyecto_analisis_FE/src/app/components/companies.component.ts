@@ -31,10 +31,15 @@ export class CompaniesComponent implements OnInit, OnDestroy {
     this.form = this.fb.group({
       Nombre: ['', [Validators.required, Validators.minLength(3)]],
       Nit: ['', [Validators.required, Validators.maxLength(20)]],
-      Descripcion: [''],
-      Direccion: [''],
-      Telefono: [''],
-      CorreoElectronico: ['', Validators.email]
+      Direccion: ['', [Validators.required, Validators.maxLength(200)]],
+      PasswordCantidadMayusculas: [1, [Validators.required, Validators.min(0)]],
+      PasswordCantidadMinusculas: [1, [Validators.required, Validators.min(0)]],
+      PasswordCantidadCaracteresEspeciales: [1, [Validators.required, Validators.min(0)]],
+      PasswordCantidadCaducidadDias: [60, [Validators.required, Validators.min(1)]],
+      PasswordLargo: [8, [Validators.required, Validators.min(1)]],
+      PasswordIntentosAntesDeBloquear: [5, [Validators.required, Validators.min(1)]],
+      PasswordCantidadNumeros: [1, [Validators.required, Validators.min(0)]],
+      PasswordCantidadPreguntasValidar: [1, [Validators.required, Validators.min(0)]]
     });
   }
 

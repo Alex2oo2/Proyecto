@@ -32,8 +32,7 @@ export class BranchesComponent implements OnInit, OnDestroy {
     this.form = this.fb.group({
       IdEmpresa: ['', [Validators.required]],
       Nombre: ['', [Validators.required, Validators.minLength(3)]],
-      Descripcion: [''],
-      Direccion: ['']
+      Direccion: ['', [Validators.required, Validators.maxLength(200)]]
     });
   }
 

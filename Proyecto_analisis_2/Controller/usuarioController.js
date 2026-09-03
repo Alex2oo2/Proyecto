@@ -34,7 +34,7 @@ async function obtenerPorId(req, res) {
 }
 
 async function crear(req, res) {
-  const { 
+  const {
     IdUsuario, Password, Nombre, Apellido, IdRole,
     FechaNacimiento, IdGenero, IdSucursal 
   } = req.body;
@@ -68,7 +68,7 @@ async function actualizar(req, res) {
   const { id } = req.params;
   const { 
     Nombre, Apellido, CorreoElectronico, TelefonoMovil, IdGenero, 
-    IdSucursal, IdRole, IdStatusUsuario 
+    IdSucursal, IdRole, IdStatusUsuario, RequiereCambiarPassword 
   } = req.body;
 
   if (!id) {
@@ -97,6 +97,7 @@ async function actualizar(req, res) {
       IdSucursal: IdSucursal || usuario.IdSucursal,
       IdRole,
       IdStatusUsuario,
+      RequiereCambiarPassword,
       UsuarioModificacion: req.usuario?.IdUsuario || 'system'
     };
 

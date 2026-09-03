@@ -57,26 +57,15 @@
           class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
           [class.border-red-500]="form.get('Nit')?.invalid && form.get('Nit')?.touched"
         />
-      </div>
-
-      <!-- Descripcion -->
-      <div>
-        <label for="descripcion" class="block text-sm font-medium text-gray-300 mb-2">
-          Descripción
-        </label>
-        <textarea
-          id="descripcion"
-          formControlName="Descripcion"
-          placeholder="Descripción de la empresa"
-          rows="3"
-          class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
-        ></textarea>
+        <p *ngIf="form.get('Nit')?.invalid && form.get('Nit')?.touched" class="text-red-400 text-xs mt-1">
+          El NIT es requerido y no puede superar 20 caracteres.
+        </p>
       </div>
 
       <!-- Dirección -->
       <div>
         <label for="direccion" class="block text-sm font-medium text-gray-300 mb-2">
-          Dirección
+          Dirección <span class="text-red-500">*</span>
         </label>
         <input
           id="direccion"
@@ -87,34 +76,35 @@
         />
       </div>
 
-      <!-- Teléfono -->
-      <div>
-        <label for="telefono" class="block text-sm font-medium text-gray-300 mb-2">
-          Teléfono
-        </label>
-        <input
-          id="telefono"
-          type="tel"
-          formControlName="Telefono"
-          placeholder="Teléfono de la empresa"
-          class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
-        />
-      </div>
-
-      <!-- Email -->
-      <div>
-        <label for="email" class="block text-sm font-medium text-gray-300 mb-2">
-          Correo Electrónico
-        </label>
-        <input
-          id="email"
-          type="email"
-          formControlName="CorreoElectronico"
-          placeholder="correo@empresa.com"
-          class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
-          [class.border-red-500]="form.get('CorreoElectronico')?.invalid && form.get('CorreoElectronico')?.touched"
-        />
-      </div>
+      <fieldset class="border border-gray-700 rounded-lg p-4 space-y-4">
+        <legend class="px-2 text-sm font-medium text-gray-300">Política de contraseña</legend>
+        <div class="grid grid-cols-2 gap-4">
+          <label class="text-sm text-gray-300">Mayúsculas mínimas
+            <input type="number" min="0" formControlName="PasswordCantidadMayusculas" class="mt-1 w-full bg-gray-700 border border-gray-600 text-white px-3 py-2 rounded">
+          </label>
+          <label class="text-sm text-gray-300">Minúsculas mínimas
+            <input type="number" min="0" formControlName="PasswordCantidadMinusculas" class="mt-1 w-full bg-gray-700 border border-gray-600 text-white px-3 py-2 rounded">
+          </label>
+          <label class="text-sm text-gray-300">Caracteres especiales mínimos
+            <input type="number" min="0" formControlName="PasswordCantidadCaracteresEspeciales" class="mt-1 w-full bg-gray-700 border border-gray-600 text-white px-3 py-2 rounded">
+          </label>
+          <label class="text-sm text-gray-300">Números mínimos
+            <input type="number" min="0" formControlName="PasswordCantidadNumeros" class="mt-1 w-full bg-gray-700 border border-gray-600 text-white px-3 py-2 rounded">
+          </label>
+          <label class="text-sm text-gray-300">Largo mínimo
+            <input type="number" min="1" formControlName="PasswordLargo" class="mt-1 w-full bg-gray-700 border border-gray-600 text-white px-3 py-2 rounded">
+          </label>
+          <label class="text-sm text-gray-300">Intentos antes de bloquear
+            <input type="number" min="1" formControlName="PasswordIntentosAntesDeBloquear" class="mt-1 w-full bg-gray-700 border border-gray-600 text-white px-3 py-2 rounded">
+          </label>
+          <label class="text-sm text-gray-300">Caducidad (días)
+            <input type="number" min="1" formControlName="PasswordCantidadCaducidadDias" class="mt-1 w-full bg-gray-700 border border-gray-600 text-white px-3 py-2 rounded">
+          </label>
+          <label class="text-sm text-gray-300">Preguntas a validar
+            <input type="number" min="0" formControlName="PasswordCantidadPreguntasValidar" class="mt-1 w-full bg-gray-700 border border-gray-600 text-white px-3 py-2 rounded">
+          </label>
+        </div>
+      </fieldset>
 
       <!-- Buttons -->
       <div class="flex gap-3 pt-4">
@@ -147,11 +137,8 @@
       <div class="flex justify-between items-start gap-4">
         <div class="flex-1">
           <h3 class="text-lg font-semibold text-white">{{ empresa.Nombre }}</h3>
-          <p *ngIf="empresa.Descripcion" class="text-gray-400 text-sm mt-1">{{ empresa.Descripcion }}</p>
           <div class="flex flex-wrap gap-4 mt-3 text-sm text-gray-400">
             <span *ngIf="empresa.Direccion">{{ empresa.Direccion }}</span>
-            <span *ngIf="empresa.Telefono">{{ empresa.Telefono }}</span>
-            <span *ngIf="empresa.CorreoElectronico">{{ empresa.CorreoElectronico }}</span>
           </div>
         </div>
         <div class="flex gap-2">
