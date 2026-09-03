@@ -51,6 +51,22 @@
         </div>
 
         <div>
+          <label class="block text-gray-300 mb-2">Fecha de nacimiento</label>
+          <input
+            formControlName="FechaNacimiento"
+            type="date"
+            class="w-full bg-gray-700 border border-gray-600 text-white px-3 py-2 rounded">
+        </div>
+
+        <div>
+          <label class="block text-gray-300 mb-2">Contraseña</label>
+          <input
+            formControlName="Password"
+            type="password"
+            class="w-full bg-gray-700 border border-gray-600 text-white px-3 py-2 rounded">
+        </div>
+
+        <div>
           <label class="block text-gray-300 mb-2">Email</label>
           <input 
             formControlName="CorreoElectronico" 
@@ -92,6 +108,7 @@
             formControlName="IdRole" 
             class="w-full bg-gray-700 border border-gray-600 text-white px-3 py-2 rounded">
             <option value="">Selecciona...</option>
+            <option *ngFor="let role of roles" [value]="role.IdRole">{{ role.Nombre }}</option>
           </select>
         </div>
 
@@ -103,6 +120,22 @@
             <option value="">Selecciona...</option>
             <option *ngFor="let s of statusUsuarios" [value]="s.IdStatusUsuario">{{ s.Nombre }}</option>
           </select>
+        </div>
+
+        <div>
+          <label class="block text-gray-300 mb-2">Pregunta de seguridad</label>
+          <input
+            formControlName="Pregunta"
+            type="text"
+            class="w-full bg-gray-700 border border-gray-600 text-white px-3 py-2 rounded">
+        </div>
+
+        <div>
+          <label class="block text-gray-300 mb-2">Respuesta de seguridad</label>
+          <input
+            formControlName="Respuesta"
+            type="text"
+            class="w-full bg-gray-700 border border-gray-600 text-white px-3 py-2 rounded">
         </div>
 
         <div class="col-span-2">

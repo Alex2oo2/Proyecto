@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';import { FormsModule } from '@angular/forms';import { ApiService } from '../services/api.service';
-import { Usuario, Genero, StatusUsuario, Sucursal } from '../models/index';
+import { Usuario, Genero, StatusUsuario, Sucursal, Role } from '../models/index';
 
 @Component({
   selector: 'app-users',
@@ -15,6 +15,7 @@ export class UsersComponent implements OnInit {
   generos: Genero[] = [];
   statusUsuarios: StatusUsuario[] = [];
   sucursales: Sucursal[] = [];
+  roles: Role[] = [];
   
   showForm = false;
   isEditMode = false;
@@ -30,15 +31,19 @@ export class UsersComponent implements OnInit {
     private fb: FormBuilder
   ) {
     this.userForm = this.fb.group({
-      IdUsuario: [''],
+      IdUsuario: ['', Validators.required],
       Nombre: ['', Validators.required],
       Apellido: ['', Validators.required],
+      FechaNacimiento: ['', Validators.required],
+      Password: ['', Validators.required],
       CorreoElectronico: ['', [Validators.required, Validators.email]],
       TelefonoMovil: [''],
       IdGenero: ['', Validators.required],
       IdSucursal: ['', Validators.required],
       IdRole: ['', Validators.required],
-      IdStatusUsuario: ['', Validators.required]
+      IdStatusUsuario: ['', Validators.required],
+      Pregunta: ['', Validators.required],
+      Respuesta: ['', Validators.required]
     });
   }
 
@@ -65,21 +70,29 @@ export class UsersComponent implements OnInit {
     this.apiService.getGeneros().subscribe(data => this.generos = data);
     this.apiService.getStatusUsuarios().subscribe(data => this.statusUsuarios = data);
     this.apiService.getSucursales().subscribe(data => this.sucursales = data);
+    this.apiService.getRoles().subscribe(data => this.roles = data);
   }
 
   editUser(usuario: Usuario) {
     this.isEditMode = true;
     this.selectedUserId = usuario.IdUsuario;
+    ['IdUsuario', 'FechaNacimiento', 'Password', 'Pregunta', 'Respuesta'].forEach(field => {
+      this.userForm.get(field)?.clearValidators();
+      this.userForm.get(field)?.updateValueAndValidity();
+    });
     this.userForm.patchValue({
       IdUsuario: usuario.IdUsuario,
       Nombre: usuario.Nombre,
       Apellido: usuario.Apellido,
+      FechaNacimiento: usuario.FechaNacimiento,
       CorreoElectronico: usuario.CorreoElectronico,
       TelefonoMovil: usuario.TelefonoMovil,
       IdGenero: usuario.IdGenero,
       IdSucursal: usuario.IdSucursal,
       IdRole: usuario.IdRole,
-      IdStatusUsuario: usuario.IdStatusUsuario
+      IdStatusUsuario: usuario.IdStatusUsuario,
+      Pregunta: usuario.Pregunta,
+      Respuesta: usuario.Respuesta
     });
     this.userForm.get('IdUsuario')?.disable();
     this.showForm = true;
@@ -118,11 +131,29 @@ export class UsersComponent implements OnInit {
           this.error = err.error?.error || 'Error al actualizar usuario';
         }
       });
+    } else {
+      this.apiService.crearUsuario(formData).subscribe({
+        next: () => {
+          this.success = 'Usuario creado exitosamente';
+          this.resetForm();
+          this.loadUsers();
+        },
+        error: (err) => {
+          this.error = err.error?.error || 'Error al crear usuario';
+        }
+      });
     }
   }
 
   resetForm() {
     this.userForm.reset();
+    this.userForm.get('IdUsuario')?.setValidators(Validators.required);
+    ['FechaNacimiento', 'Password', 'Pregunta', 'Respuesta'].forEach(field => {
+      this.userForm.get(field)?.setValidators(Validators.required);
+    });
+    Object.keys(this.userForm.controls).forEach(field => {
+      this.userForm.get(field)?.updateValueAndValidity();
+    });
     this.showForm = false;
     this.isEditMode = false;
     this.selectedUserId = null;

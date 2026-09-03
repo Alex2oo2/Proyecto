@@ -53,15 +53,15 @@ export interface Usuario {
   Nombre: string;
   Apellido: string;
   FechaNacimiento: string;
-  Password?: string;
+  Password: string;
   IdGenero: number;
   CorreoElectronico?: string;
   TelefonoMovil?: string | null;
   IdSucursal: number;
   IdRole: number;
   IdStatusUsuario?: number;
-  Pregunta?: string;
-  Respuesta?: string;
+  Pregunta: string;
+  Respuesta: string;
 }
 
 export interface Modulo {
