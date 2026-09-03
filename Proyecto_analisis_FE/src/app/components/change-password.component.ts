@@ -15,66 +15,66 @@ import { AuthService } from '../services/auth.service';
     <div class="min-h-screen bg-gray-900 p-8">
       <div class="max-w-md mx-auto">
         <div class="bg-gray-800 rounded-lg shadow-lg p-8">
-          <h1 class="text-3xl font-bold text-white mb-2">Change Password</h1>
-          <p class="text-gray-400 mb-6">Update your account password</p>
+          <h1 class="text-3xl font-bold text-white mb-2">Cambiar Contraseña</h1>
+          <p class="text-gray-400 mb-6">Actualiza la contraseña de tu cuenta</p>
 
           <form [formGroup]="passwordForm" (ngSubmit)="onSubmit()">
             <!-- Current Password -->
             <div class="mb-4">
               <label class="block text-gray-300 text-sm font-semibold mb-2">
-                Current Password
+                Contraseña Actual
               </label>
               <input
                 type="password"
                 formControlName="currentPassword"
                 class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-blue-500"
-                placeholder="Enter your current password"
+                placeholder="Ingrese su contraseña actual"
               />
               <div *ngIf="passwordForm.get('currentPassword')?.touched && passwordForm.get('currentPassword')?.hasError('required')" 
                    class="text-red-400 text-xs mt-1">
-                Current password is required
+                Contraseña actual es requerida
               </div>
             </div>
 
             <!-- New Password -->
             <div class="mb-4">
               <label class="block text-gray-300 text-sm font-semibold mb-2">
-                New Password
+                Nueva Contraseña
               </label>
               <input
                 type="password"
                 formControlName="newPassword"
                 class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-blue-500"
-                placeholder="Enter new password"
+                placeholder="Ingrese su nueva contraseña"
               />
               <div *ngIf="passwordForm.get('newPassword')?.touched && passwordForm.get('newPassword')?.hasError('required')" 
                    class="text-red-400 text-xs mt-1">
-                New password is required
+                Nueva contraseña es requerida
               </div>
               <div *ngIf="passwordForm.get('newPassword')?.touched && passwordForm.get('newPassword')?.hasError('minlength')" 
                    class="text-red-400 text-xs mt-1">
-                Password must be at least 6 characters
+                La contraseña debe tener al menos 6 caracteres
               </div>
             </div>
 
             <!-- Confirm New Password -->
             <div class="mb-6">
               <label class="block text-gray-300 text-sm font-semibold mb-2">
-                Confirm New Password
+                Confirmar Nueva Contraseña
               </label>
               <input
                 type="password"
                 formControlName="confirmPassword"
                 class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-blue-500"
-                placeholder="Confirm new password"
+                placeholder="Confirmar nueva contraseña"
               />
               <div *ngIf="passwordForm.get('confirmPassword')?.touched && passwordForm.get('confirmPassword')?.hasError('required')" 
                    class="text-red-400 text-xs mt-1">
-                Password confirmation is required
+                La confirmación de la contraseña es requerida
               </div>
               <div *ngIf="passwordForm.touched && passwordForm.hasError('passwordMismatch')" 
                    class="text-red-400 text-xs mt-1">
-                Passwords do not match
+                Las contraseñas no coinciden
               </div>
             </div>
 
@@ -95,13 +95,13 @@ import { AuthService } from '../services/auth.service';
                 [disabled]="loading || passwordForm.invalid"
                 class="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white font-semibold rounded transition"
               >
-                {{ loading ? 'Updating...' : 'Change Password' }}
+                {{ loading ? 'Actualizando...' : 'Cambiar Contraseña' }}
               </button>
               <a
                 routerLink="/dashboard"
                 class="flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded transition text-center"
               >
-                Cancel
+                Cancelar
               </a>
             </div>
           </form>
@@ -145,7 +145,7 @@ export class ChangePasswordComponent implements OnDestroy {
 
   onSubmit(): void {
     if (this.passwordForm.invalid) {
-      this.errorMessage = 'Please fill all fields correctly';
+      this.errorMessage = 'Por favor, complete todos los campos correctamente';
       return;
     }
 
@@ -167,7 +167,7 @@ export class ChangePasswordComponent implements OnDestroy {
       .subscribe({
         next: (response) => {
           this.loading = false;
-          this.successMessage = 'Password changed successfully!';
+          this.successMessage = 'Contraseña cambiada exitosamente!';
           this.passwordForm.reset();
           setTimeout(() => {
             this.router.navigate(['/dashboard']);
@@ -175,7 +175,7 @@ export class ChangePasswordComponent implements OnDestroy {
         },
         error: (error) => {
           this.loading = false;
-          this.errorMessage = error?.error?.mensaje || 'Failed to change password';
+          this.errorMessage = error?.error?.mensaje || 'Error al cambiar la contraseña';
           console.error('Error changing password:', error);
         }
       });

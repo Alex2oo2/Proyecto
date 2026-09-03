@@ -15,8 +15,8 @@ import { Usuario, Empresa, Genero, StatusUsuario } from '../models/index';
     <div class="min-h-screen bg-gray-900 p-8">
       <div class="max-w-2xl mx-auto">
         <div class="bg-gray-800 rounded-lg shadow-lg p-8">
-          <h1 class="text-3xl font-bold text-white mb-2">Create Account</h1>
-          <p class="text-gray-400 mb-6">Register a new user account</p>
+          <h1 class="text-3xl font-bold text-white mb-2">Crear Cuenta</h1>
+          <p class="text-gray-400 mb-6">Registrar una nueva cuenta de usuario</p>
 
           <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
             <div class="grid grid-cols-2 gap-6">
@@ -36,7 +36,7 @@ import { Usuario, Empresa, Genero, StatusUsuario } from '../models/index';
 
               <!-- First Name -->
               <div>
-                <label class="block text-gray-300 text-sm font-semibold mb-2">First Name</label>
+                <label class="block text-gray-300 text-sm font-semibold mb-2">Nombre</label>
                 <input
                   type="text"
                   formControlName="Nombre"
@@ -44,13 +44,13 @@ import { Usuario, Empresa, Genero, StatusUsuario } from '../models/index';
                   placeholder="John"
                 />
                 <div *ngIf="userForm.get('Nombre')?.touched && userForm.get('Nombre')?.hasError('required')" class="text-red-400 text-xs mt-1">
-                  First name is required
+                  El nombre es requerido
                 </div>
               </div>
 
               <!-- Last Name -->
               <div>
-                <label class="block text-gray-300 text-sm font-semibold mb-2">Last Name</label>
+                <label class="block text-gray-300 text-sm font-semibold mb-2">Apellido</label>
                 <input
                   type="text"
                   formControlName="Apellido"
@@ -58,13 +58,13 @@ import { Usuario, Empresa, Genero, StatusUsuario } from '../models/index';
                   placeholder="Doe"
                 />
                 <div *ngIf="userForm.get('Apellido')?.touched && userForm.get('Apellido')?.hasError('required')" class="text-red-400 text-xs mt-1">
-                  Last name is required
+                  El apellido es requerido
                 </div>
               </div>
 
               <!-- Password -->
               <div>
-                <label class="block text-gray-300 text-sm font-semibold mb-2">Password</label>
+                <label class="block text-gray-300 text-sm font-semibold mb-2">Contraseña</label>
                 <input
                   type="password"
                   formControlName="Password"
@@ -72,20 +72,20 @@ import { Usuario, Empresa, Genero, StatusUsuario } from '../models/index';
                   placeholder="password123"
                 />
                 <div *ngIf="userForm.get('Password')?.touched && userForm.get('Password')?.hasError('required')" class="text-red-400 text-xs mt-1">
-                  Password is required
+                  La contraseña es requerida
                 </div>
               </div>
 
               <!-- Birth Date -->
               <div>
-                <label class="block text-gray-300 text-sm font-semibold mb-2">Birth Date</label>
+                <label class="block text-gray-300 text-sm font-semibold mb-2">Fecha de Nacimiento</label>
                 <input
                   type="date"
                   formControlName="FechaNacimiento"
                   class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-blue-500"
                 />
                 <div *ngIf="userForm.get('FechaNacimiento')?.touched && userForm.get('FechaNacimiento')?.hasError('required')" class="text-red-400 text-xs mt-1">
-                  Birth date is required
+                  La fecha de nacimiento es requerida
                 </div>
               </div>
 
