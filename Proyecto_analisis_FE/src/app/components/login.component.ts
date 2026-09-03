@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
@@ -27,12 +27,12 @@ export class LoginComponent {
     });
   }
 
-  get username() {
-    return this.loginForm.get('username');
+  get username(): AbstractControl {
+    return this.loginForm.get('username')!;
   }
 
-  get password() {
-    return this.loginForm.get('password');
+  get password(): AbstractControl {
+    return this.loginForm.get('password')!;
   }
 
   onSubmit(): void {

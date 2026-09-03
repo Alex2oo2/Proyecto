@@ -21,32 +21,8 @@
         </div>
       </div>
 
-      <!-- Center Navigation (Desktop) -->
-      <div class="hidden md:flex items-center gap-1">
-        <a routerLink="/dashboard" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700 transition">
-          Inicio
-        </a>
-        <a routerLink="/usuarios" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700 transition">
-          Usuarios
-        </a>
-        <a routerLink="/roles" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700 transition">
-          Roles
-        </a>
-        <div class="px-2">
-          <div class="w-px h-6 bg-slate-700"></div>
-        </div>
-        <a routerLink="/empresas" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700 transition">
-          Catálogos
-        </a>
-      </div>
-
       <!-- Right Actions -->
       <div class="flex items-center gap-4">
-        <a 
-          routerLink="/change-password"
-          class="hidden sm:inline-flex px-3 py-1.5 text-sm font-medium text-blue-300 hover:text-blue-200 transition">
-          🔐 Cambiar Contraseña
-        </a>
         
         <!-- Profile Dropdown -->
         <div class="relative">
@@ -74,12 +50,12 @@
               routerLink="/change-password"
               (click)="showProfileMenu = false"
               class="block px-4 py-2 text-sm text-slate-300 hover:text-white hover:bg-slate-700 transition">
-              🔐 Cambiar Contraseña
+              Cambiar Contraseña
             </a>
             <button 
               (click)="logout()"
               class="w-full text-left px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-slate-700 transition">
-              🚪 Cerrar Sesión
+              Cerrar Sesión
             </button>
           </div>
         </div>

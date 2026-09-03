@@ -149,9 +149,9 @@
           <h3 class="text-lg font-semibold text-white">{{ empresa.Nombre }}</h3>
           <p *ngIf="empresa.Descripcion" class="text-gray-400 text-sm mt-1">{{ empresa.Descripcion }}</p>
           <div class="flex flex-wrap gap-4 mt-3 text-sm text-gray-400">
-            <span *ngIf="empresa.Direccion">📍 {{ empresa.Direccion }}</span>
-            <span *ngIf="empresa.Telefono">📞 {{ empresa.Telefono }}</span>
-            <span *ngIf="empresa.CorreoElectronico">✉️ {{ empresa.CorreoElectronico }}</span>
+            <span *ngIf="empresa.Direccion">{{ empresa.Direccion }}</span>
+            <span *ngIf="empresa.Telefono">{{ empresa.Telefono }}</span>
+            <span *ngIf="empresa.CorreoElectronico">{{ empresa.CorreoElectronico }}</span>
           </div>
         </div>
         <div class="flex gap-2">

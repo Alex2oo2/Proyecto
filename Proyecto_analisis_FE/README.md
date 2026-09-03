@@ -2,7 +2,7 @@
 
 Un frontend Angular moderno y limpio para gestionar el sistema de análisis.
 
-## 🎯 Características
+## Características
 
 - **Autenticación JWT**: Login seguro con token JWT
 - **Gestión de Catálogos**: Empresas, Sucursales, Géneros, Estados de Usuario
@@ -11,13 +11,13 @@ Un frontend Angular moderno y limpio para gestionar el sistema de análisis.
 - **Estructura Plana**: Componentes simples y fáciles de entender
 - **Guardias de Autenticación**: Rutas protegidas que requieren autenticación
 
-## 📋 Requisitos Previos
+## Requisitos Previos
 
 - Node.js 18+ 
 - npm 9+
 - Angular CLI 18+
 
-## 🚀 Instalación
+## Instalación
 
 ```bash
 # Instalar dependencias
@@ -30,7 +30,7 @@ npm start
 npm run build
 ```
 
-## 📁 Estructura del Proyecto
+## Estructura del Proyecto
 
 ```
 src/
@@ -54,7 +54,7 @@ src/
 └── index.html                      # HTML principal
 ```
 
-## 🔧 Configuración
+## Configuración
 
 ### Backend
 
@@ -70,7 +70,7 @@ private apiUrl = 'http://localhost:3000'; // Cambia aquí
 
 La configuración de Tailwind está en [tailwind.config.js](tailwind.config.js). El tema oscuro está habilitado por defecto.
 
-## 📡 Endpoints Disponibles
+## Endpoints Disponibles
 
 El frontend se conecta a los siguientes endpoints del backend:
 
@@ -87,13 +87,13 @@ El frontend se conecta a los siguientes endpoints del backend:
 - `PUT /catalogos/sucursales/:id` - Actualizar sucursal
 - `DELETE /catalogos/sucursales/:id` - Eliminar sucursal
 
-## 🎨 Tema y Estilos
+## Tema y Estilos
 
 La aplicación utiliza **Tailwind CSS** con tema oscuro. Todos los colores y estilos están configurados en [tailwind.config.js](tailwind.config.js).
 
 Para personalizar colores, edita el archivo de configuración de Tailwind.
 
-## 🔐 Autenticación
+## Autenticación
 
 El token JWT se almacena en `localStorage` con la clave `auth_token`. El token se envía automáticamente en todas las peticiones autenticadas en el header:
 
@@ -101,14 +101,14 @@ El token JWT se almacena en `localStorage` con la clave `auth_token`. El token s
 Authorization: Bearer <token>
 ```
 
-## 📝 Notas de Desarrollo
+## Notas de Desarrollo
 
 - **Validación**: Los formularios utilizan validadores de Angular Forms
 - **Manejo de Errores**: Los errores de API se muestran en la UI
 - **Estados de Carga**: Los botones se deshabilitan durante las operaciones
 - **Unsubscribe**: Todos los componentes implementan `OnDestroy` y usan `takeUntil` para evitar memory leaks
 
-## 🤝 Contribución
+## Contribución
 
 Este es un proyecto de demostración. Para modificaciones:
 
@@ -117,10 +117,10 @@ Este es un proyecto de demostración. Para modificaciones:
 3. Extiende el `ApiService` para nuevos endpoints
 4. Usa Tailwind CSS para estilos
 
-## 📄 Licencia
+## Licencia
 
 ISC
 
-## ✉️ Contacto
+## Contacto
 
 Proyecto Análisis 2 - Sistema de Gestión

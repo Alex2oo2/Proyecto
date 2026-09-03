@@ -25,26 +25,26 @@ export class SidebarComponent {
   navItems: NavItem[] = [
     {
       label: 'Inicio',
-      icon: '🏠',
+      icon: '',
       route: '/dashboard'
     },
     {
       label: 'Administración',
-      icon: '⚙️',
+      icon: '',
       children: [
-        { label: 'Usuarios', icon: '👥', route: '/dashboard/usuarios' },
-        { label: 'Roles', icon: '🔑', route: '/dashboard/roles' },
-        { label: 'Módulos', icon: '📦', route: '/dashboard/modulos' },
-        { label: 'Menús', icon: '📋', route: '/dashboard/menus' },
-        { label: 'Opciones', icon: '✨', route: '/dashboard/opciones' }
+        { label: 'Usuarios', icon: '', route: '/dashboard/usuarios' },
+        { label: 'Roles', icon: '', route: '/dashboard/roles' },
+        { label: 'Módulos', icon: '', route: '/dashboard/modulos' },
+        { label: 'Menús', icon: '', route: '/dashboard/menus' },
+        { label: 'Opciones', icon: '', route: '/dashboard/opciones' }
       ]
     },
     {
       label: 'Catálogos',
-      icon: '📚',
+      icon: '',
       children: [
-        { label: 'Empresas', icon: '🏢', route: '/dashboard/empresas' },
-        { label: 'Sucursales', icon: '🏭', route: '/dashboard/sucursales' }
+        { label: 'Empresas', icon: '', route: '/dashboard/empresas' },
+        { label: 'Sucursales', icon: '', route: '/dashboard/sucursales' }
       ]
     }
   ];

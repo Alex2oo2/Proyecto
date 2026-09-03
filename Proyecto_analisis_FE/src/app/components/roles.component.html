@@ -2,14 +2,14 @@
   <!-- Header -->
   <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
     <div>
-      <h1 class="text-3xl font-bold text-white">🔑 Gestión de Roles y Permisos</h1>
+      <h1 class="text-3xl font-bold text-white">Gestión de Roles y Permisos</h1>
       <p class="text-slate-400 mt-1">Administra los roles del sistema</p>
     </div>
     <button 
       (click)="toggleForm()"
       class="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl">
-      <span *ngIf="!showForm">➕ Nuevo Rol</span>
-      <span *ngIf="showForm">❌ Cancelar</span>
+      <span *ngIf="!showForm"> Nuevo Rol</span>
+      <span *ngIf="showForm"> Cancelar</span>
     </button>
   </div>
 
@@ -23,7 +23,7 @@
 
   <!-- Form Card -->
   <div *ngIf="showForm" class="bg-gradient-to-br from-slate-800 to-slate-900 p-6 rounded-xl border border-slate-700 shadow-xl">
-    <h2 class="text-2xl font-bold text-white mb-6">{{ isEditMode ? '✏️ Editar Rol' : '➕ Nuevo Rol' }}</h2>
+    <h2 class="text-2xl font-bold text-white mb-6">{{ isEditMode ? ' Editar Rol' : ' Nuevo Rol' }}</h2>
     <form [formGroup]="roleForm" (ngSubmit)="onSubmit()" class="space-y-4">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
@@ -43,7 +43,7 @@
       </div>
       <div class="flex gap-3 pt-4">
         <button type="submit" class="flex-1 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200">
-          {{ isEditMode ? '✓ Actualizar' : '✓ Crear' }} Rol
+          {{ isEditMode ? 'Actualizar' : 'Crear' }} Rol
         </button>
       </div>
     </form>
@@ -70,17 +70,17 @@
               <button 
                 (click)="editRole(role)" 
                 class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-medium transition">
-                ✏️ Editar
+                Editar
               </button>
               <button 
                 (click)="openPermisosModal(role)" 
                 class="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs font-medium transition">
-                🔐 Permisos
+                Permisos
               </button>
               <button 
                 (click)="deleteRole(role.IdRole)" 
                 class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-medium transition">
-                🗑️ Eliminar
+                Eliminar
               </button>
             </td>
           </tr>
@@ -92,7 +92,7 @@
   <!-- Permisos Modal -->
   <div *ngIf="showPermisosModal" class="fixed inset-0 bg-black/70 backdrop-blur flex items-center justify-center z-50 p-4">
     <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl border border-slate-700 p-6 max-w-5xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-      <h2 class="text-2xl font-bold text-white mb-6">🔐 Matriz de Permisos</h2>
+      <h2 class="text-2xl font-bold text-white mb-6">Matriz de Permisos</h2>
 
       <!-- Module Selector -->
       <div class="mb-6">
@@ -171,12 +171,12 @@
         <button 
           (click)="savePermisos()"
           class="flex-1 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200">
-          ✓ Guardar Permisos
+          Guardar Permisos
         </button>
         <button 
           (click)="closePermisosModal()"
           class="flex-1 bg-slate-600 hover:bg-slate-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200">
-          ✕ Cerrar
+          Cerrar
         </button>
       </div>
     </div>

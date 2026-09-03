@@ -2,14 +2,14 @@
   <!-- Header -->
   <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
     <div>
-      <h1 class="text-3xl font-bold text-white">📋 Gestión de Menús</h1>
+      <h1 class="text-3xl font-bold text-white">Gestión de Menús</h1>
       <p class="text-slate-400 mt-1">Administra los menús del sistema</p>
     </div>
     <button 
       (click)="toggleForm()"
       class="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl">
-      <span *ngIf="!showForm">➕ Nuevo Menú</span>
-      <span *ngIf="showForm">❌ Cancelar</span>
+      <span *ngIf="!showForm">Nuevo Menú</span>
+      <span *ngIf="showForm">Cancelar</span>
     </button>
   </div>
 
@@ -23,7 +23,7 @@
 
   <!-- Form Card -->
   <div *ngIf="showForm" class="bg-gradient-to-br from-slate-800 to-slate-900 p-6 rounded-xl border border-slate-700 shadow-xl">
-    <h2 class="text-2xl font-bold text-white mb-6">{{ isEditMode ? '✏️ Editar Menú' : '➕ Nuevo Menú' }}</h2>
+    <h2 class="text-2xl font-bold text-white mb-6">{{ isEditMode ? 'Editar Menú' : 'Nuevo Menú' }}</h2>
     <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
@@ -44,7 +44,7 @@
       </div>
       <div class="flex gap-3 pt-4">
         <button type="submit" class="flex-1 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200">
-          {{ isEditMode ? '✓ Actualizar' : '✓ Crear' }} Menú
+          {{ isEditMode ? 'Actualizar' : 'Crear' }} Menú
         </button>
       </div>
     </form>
@@ -70,8 +70,8 @@
             <td class="px-6 py-4 text-sm text-slate-400">{{ getNombreModulo(menu.IdModulo) }}</td>
             <td class="px-6 py-4 text-sm text-slate-400">{{ menu.OrdenMenu }}</td>
             <td class="px-6 py-4 text-sm space-x-2">
-              <button (click)="editItem(menu)" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-medium transition">✏️ Editar</button>
-              <button (click)="deleteItem(menu.IdMenu)" class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-medium transition">🗑️ Eliminar</button>
+              <button (click)="editItem(menu)" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-medium transition">Editar</button>
+              <button (click)="deleteItem(menu.IdMenu)" class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-medium transition">Eliminar</button>
             </td>
           </tr>
         </tbody>

@@ -1,4 +1,4 @@
-# 🚀 Guía Rápida de Inicio
+# Guía Rápida de Inicio
 
 ## Pasos para Ejecutar la Aplicación
 
@@ -23,13 +23,13 @@ npm start
 
 La aplicación se abrirá automáticamente en `http://localhost:4200`
 
-## 🔑 Credenciales de Prueba
+## Credenciales de Prueba
 
 Usa las credenciales de un usuario existente en la base de datos. Según el código del backend:
 - **Usuario**: (ej: username de la tabla USUARIO)
 - **Contraseña**: (contraseña registrada)
 
-## 🎯 Funcionalidades Disponibles
+## Funcionalidades Disponibles
 
 ### Login
 - Ingresa con tus credenciales
@@ -50,14 +50,14 @@ Usa las credenciales de un usuario existente en la base de datos. Según el cód
 - Similar a empresas, pero vinculadas a una empresa
 - Selecciona la empresa al crear/editar
 
-## 📝 Notas Importantes
+## Notas Importantes
 
 1. **CORS**: El backend debe tener CORS habilitado (ya está configurado)
 2. **Autenticación**: Todas las peticiones excepto login requieren token
 3. **Permisos**: Algunos endpoints requieren permisos específicos del rol
 4. **Tema Oscuro**: El tema está completamente en modo oscuro por defecto
 
-## 🛠️ Troubleshooting
+## Troubleshooting
 
 ### Error: "Cannot GET /api/..."
 - Asegúrate que el backend está corriendo en `http://localhost:3000`
@@ -71,7 +71,7 @@ Usa las credenciales de un usuario existente en la base de datos. Según el cód
 - Tu rol no tiene permisos para esa acción
 - Contacta al administrador para que te asigne permisos
 
-## 📚 Documentación
+## Documentación
 
 - [README Principal](./README.md) - Información general del proyecto
 - [Angular Docs](https://angular.io/docs) - Documentación oficial de Angular

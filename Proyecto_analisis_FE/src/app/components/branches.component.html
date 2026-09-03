@@ -123,7 +123,7 @@
           <p class="text-gray-400 text-sm">Empresa: {{ getEmpresaNombre(sucursal.IdEmpresa) }}</p>
           <p *ngIf="sucursal.Descripcion" class="text-gray-400 text-sm mt-1">{{ sucursal.Descripcion }}</p>
           <div class="flex flex-wrap gap-4 mt-3 text-sm text-gray-400">
-            <span *ngIf="sucursal.Direccion">📍 {{ sucursal.Direccion }}</span>
+            <span *ngIf="sucursal.Direccion">{{ sucursal.Direccion }}</span>
           </div>
         </div>
         <div class="flex gap-2">
