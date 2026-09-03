@@ -170,7 +170,7 @@ export class ChangePasswordComponent implements OnDestroy {
           this.successMessage = 'Contraseña cambiada exitosamente!';
           this.passwordForm.reset();
           setTimeout(() => {
-            this.router.navigate(['/dashboard']);
+            this.router.navigate(['/login']);
           }, 2000);
         },
         error: (error) => {
