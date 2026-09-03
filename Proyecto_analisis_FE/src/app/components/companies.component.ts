@@ -30,6 +30,7 @@ export class CompaniesComponent implements OnInit, OnDestroy {
   ) {
     this.form = this.fb.group({
       Nombre: ['', [Validators.required, Validators.minLength(3)]],
+      Nit: ['', [Validators.required, Validators.maxLength(20)]],
       Descripcion: [''],
       Direccion: [''],
       Telefono: [''],

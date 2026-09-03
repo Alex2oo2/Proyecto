@@ -21,6 +21,7 @@ export interface LoginResponse {
 export interface Empresa {
   IdEmpresa?: number;
   Nombre: string;
+  Nit: string;
   Descripcion?: string;
   Direccion?: string;
   Telefono?: string;
