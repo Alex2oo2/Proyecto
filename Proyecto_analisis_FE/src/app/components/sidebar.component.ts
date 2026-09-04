@@ -36,7 +36,8 @@ export class SidebarComponent {
         { label: 'Roles', icon: '', route: '/dashboard/roles' },
         { label: 'Módulos', icon: '', route: '/dashboard/modulos' },
         { label: 'Menús', icon: '', route: '/dashboard/menus' },
-        { label: 'Opciones', icon: '', route: '/dashboard/opciones' }
+        { label: 'Opciones', icon: '', route: '/dashboard/opciones' },
+        { label: 'Genero', icon: '', route: '/dashboard/genero' }
       ]
     },
     {
@@ -44,8 +45,7 @@ export class SidebarComponent {
       icon: '',
       children: [
         { label: 'Empresas', icon: '', route: '/dashboard/empresas' },
-        { label: 'Sucursales', icon: '', route: '/dashboard/sucursales' },
-        { label: 'Genero', icon: '', route: '/dashboard/genero' }
+        { label: 'Sucursales', icon: '', route: '/dashboard/sucursales' }
       ]
     }
   ];
