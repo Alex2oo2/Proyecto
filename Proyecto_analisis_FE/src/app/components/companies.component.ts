@@ -146,7 +146,7 @@ export class CompaniesComponent implements OnInit, OnDestroy {
           setTimeout(() => this.loadEmpresas(), 500);
         },
         error: (err) => {
-          this.error = err.error?.mensaje || 'Error al eliminar la empresa';
+          this.error = err.error?.mensaje || err.error?.error || 'Error al eliminar la empresa';
         }
       });
   }

@@ -108,7 +108,7 @@ export class UsersComponent implements OnInit {
           this.loadUsers();
         },
         error: (err) => {
-          this.error = err.error?.error || 'Error al eliminar usuario';
+          this.error = err.error?.mensaje || err.error?.error || 'Error al eliminar usuario';
         }
       });
     }

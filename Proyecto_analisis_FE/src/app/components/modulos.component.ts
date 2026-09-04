@@ -60,7 +60,7 @@ export class ModulosComponent implements OnInit {
         this.loadItems();
       },
       error: (err) => {
-        this.error = 'Error al eliminar';
+        this.error = err.error?.mensaje || err.error?.error || 'Error al eliminar el módulo';
       }
     });
   }

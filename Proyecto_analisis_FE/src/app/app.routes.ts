@@ -10,6 +10,7 @@ import { MenusComponent } from './components/menus.component';
 import { OpcionesComponent } from './components/opciones.component';
 import { CompaniesComponent } from './components/companies.component';
 import { BranchesComponent } from './components/branches.component';
+import { GeneroComponent } from './components/genero.component';
 import { authGuard } from './services/auth.guard';
 
 export const routes: Routes = [
@@ -27,6 +28,7 @@ export const routes: Routes = [
       { path: 'change-password', component: ChangePasswordComponent },
       { path: 'empresas', component: CompaniesComponent },
       { path: 'sucursales', component: BranchesComponent },
+      { path: 'genero', component: GeneroComponent },
       { path: 'usuarios', component: UsersComponent },
       { path: 'modulos', component: ModulosComponent },
       { path: 'menus', component: MenusComponent },

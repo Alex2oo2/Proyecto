@@ -67,7 +67,7 @@ export class MenusComponent implements OnInit {
         this.loadMenus();
       },
       error: (err) => {
-        this.error = 'Error al eliminar';
+        this.error = err.error?.mensaje || err.error?.error || 'Error al eliminar el menú';
       }
     });
   }

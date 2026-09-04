@@ -3,6 +3,7 @@ const menuModel = require('../Model/menuModel.js');
 const opcionModel = require('../Model/opcionModel.js');
 const roleModel = require('../Model/roleModel.js');
 const roleOpcionModel = require('../Model/roleOpcionModel.js');
+const { sendDatabaseError } = require('../utils/databaseError.js');
 
 async function obtenerModulos(req, res) {
   try {
@@ -31,7 +32,7 @@ async function eliminarModulo(req, res) {
   try {
     await moduloModel.eliminar(req.params.id);
     res.json({ mensaje: 'Módulo eliminado exitosamente' });
-  } catch (error) { res.status(500).json({ error: error.message }); }
+  } catch (error) { sendDatabaseError(res, error, 'modulo', 'eliminar el módulo'); }
 }
 
 async function obtenerMenus(req, res) {
@@ -64,7 +65,7 @@ async function eliminarMenu(req, res) {
   try {
     await menuModel.eliminar(req.params.id);
     res.json({ mensaje: 'Menú eliminado exitosamente' });
-  } catch (error) { res.status(500).json({ error: error.message }); }
+  } catch (error) { sendDatabaseError(res, error, 'menu', 'eliminar el menú'); }
 }
 
 async function obtenerOpciones(req, res) {
@@ -97,7 +98,7 @@ async function eliminarOpcion(req, res) {
   try {
     await opcionModel.eliminar(req.params.id);
     res.json({ mensaje: 'Opción eliminada exitosamente' });
-  } catch (error) { res.status(500).json({ error: error.message }); }
+  } catch (error) { sendDatabaseError(res, error, 'opcion', 'eliminar la opción'); }
 }
 
 async function obtenerRoles(req, res) {
@@ -127,7 +128,7 @@ async function eliminarRole(req, res) {
   try {
     await roleModel.eliminar(req.params.id);
     res.json({ mensaje: 'Rol eliminado exitosamente' });
-  } catch (error) { res.status(500).json({ error: error.message }); }
+  } catch (error) { sendDatabaseError(res, error, 'role', 'eliminar el rol'); }
 }
 
 async function obtenerMatrizPermisos(req, res) {

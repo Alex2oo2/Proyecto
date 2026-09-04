@@ -2,6 +2,7 @@ const empresaModel = require('../Model/empresaModel.js');
 const sucursalModel = require('../Model/sucursalModel.js');
 const generoModel = require('../Model/generoModel.js');
 const statusUsuarioModel = require('../Model/statusUsuarioModel.js');
+const { sendDatabaseError } = require('../utils/databaseError.js');
 
 async function obtenerEmpresas(req, res) {
   try {
@@ -49,7 +50,7 @@ async function eliminarEmpresa(req, res) {
   try {
     await empresaModel.eliminar(req.params.id);
     res.json({ mensaje: 'Empresa eliminada exitosamente' });
-  } catch (error) { res.status(500).json({ error: error.message }); }
+  } catch (error) { sendDatabaseError(res, error, 'empresa', 'eliminar la empresa'); }
 }
 
 async function obtenerSucursales(req, res) {
@@ -82,7 +83,7 @@ async function eliminarSucursal(req, res) {
   try {
     await sucursalModel.eliminar(req.params.id);
     res.json({ mensaje: 'Sucursal eliminada exitosamente' });
-  } catch (error) { res.status(500).json({ error: error.message }); }
+  } catch (error) { sendDatabaseError(res, error, 'sucursal', 'eliminar la sucursal'); }
 }
 
 async function crearGenero(req, res) {
@@ -112,7 +113,7 @@ async function eliminarGenero(req, res) {
   try {
     await generoModel.eliminar(req.params.id);
     res.json({ mensaje: 'Género eliminado exitosamente' });
-  } catch (error) { res.status(500).json({ error: error.message }); }
+  } catch (error) { sendDatabaseError(res, error, 'genero', 'eliminar el género'); }
 }
 
 async function crearStatusUsuario(req, res) {
@@ -142,7 +143,7 @@ async function eliminarStatusUsuario(req, res) {
   try {
     await statusUsuarioModel.eliminar(req.params.id);
     res.json({ mensaje: 'Status de usuario eliminado exitosamente' });
-  } catch (error) { res.status(500).json({ error: error.message }); }
+  } catch (error) { sendDatabaseError(res, error, 'statusUsuario', 'eliminar el estado'); }
 }
 
 module.exports = {

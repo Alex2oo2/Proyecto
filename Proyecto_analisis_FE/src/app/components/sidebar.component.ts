@@ -44,7 +44,8 @@ export class SidebarComponent {
       icon: '',
       children: [
         { label: 'Empresas', icon: '', route: '/dashboard/empresas' },
-        { label: 'Sucursales', icon: '', route: '/dashboard/sucursales' }
+        { label: 'Sucursales', icon: '', route: '/dashboard/sucursales' },
+        { label: 'Genero', icon: '', route: '/dashboard/genero' }
       ]
     }
   ];

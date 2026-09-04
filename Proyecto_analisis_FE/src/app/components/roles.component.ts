@@ -96,7 +96,7 @@ export class RolesComponent implements OnInit {
           this.loadRoles();
         },
         error: (err) => {
-          this.error = err.error?.error || 'Error al eliminar rol';
+          this.error = err.error?.mensaje || err.error?.error || 'Error al eliminar rol';
         }
       });
     }

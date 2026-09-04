@@ -159,7 +159,7 @@ export class BranchesComponent implements OnInit, OnDestroy {
           setTimeout(() => this.loadSucursales(), 500);
         },
         error: (err) => {
-          this.error = err.error?.mensaje || 'Error al eliminar la sucursal';
+          this.error = err.error?.mensaje || err.error?.error || 'Error al eliminar la sucursal';
         }
       });
   }
