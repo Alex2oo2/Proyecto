@@ -154,7 +154,7 @@ export class UsersComponent implements OnInit {
           this.loadUsers();
         },
         error: (err) => {
-          this.error = err.error?.error || 'Error al actualizar usuario';
+          this.error = this.obtenerMensajeError(err, 'Error al actualizar usuario');
         }
       });
     } else {
@@ -165,7 +165,7 @@ export class UsersComponent implements OnInit {
           this.loadUsers();
         },
         error: (err) => {
-          this.error = err.error?.error || 'Error al crear usuario';
+          this.error = this.obtenerMensajeError(err, 'Error al crear usuario');
         }
       });
     }
@@ -187,6 +187,15 @@ export class UsersComponent implements OnInit {
     this.selectedUserId = null;
     this.error = null;
     this.success = null;
+  }
+
+  private obtenerMensajeError(error: any, mensajePredeterminado: string): string {
+    const mensaje = error?.error?.mensaje || error?.error?.error;
+    const detalles = error?.error?.errores;
+    if (Array.isArray(detalles) && detalles.length > 0) {
+      return `${mensaje || mensajePredeterminado} ${detalles.join(' ')}`;
+    }
+    return mensaje || mensajePredeterminado;
   }
 
   toggleForm() {

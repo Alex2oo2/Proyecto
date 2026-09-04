@@ -9,8 +9,7 @@ import { Genero } from '../models/index';
   selector: 'app-genero',
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
-  templateUrl: './genero.component.html',
-  styleUrls: ['./genero.component.css']
+  templateUrl: './genero.component.html'
 })
 export class GeneroComponent implements OnInit, OnDestroy {
   generos: Genero[] = [];
