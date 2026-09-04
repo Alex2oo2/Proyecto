@@ -168,6 +168,7 @@ export class ChangePasswordComponent implements OnDestroy {
         next: (response) => {
           this.loading = false;
           this.successMessage = 'Contraseña cambiada exitosamente!';
+          this.authService.clearMustChangePassword();
           this.passwordForm.reset();
           setTimeout(() => {
             this.router.navigate(['/login']);

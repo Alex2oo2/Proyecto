@@ -83,6 +83,19 @@
         </div>
 
         <div>
+          <label class="block text-gray-300 mb-2">Fotografía</label>
+          <input type="file" accept="image/*" (change)="onFotografiaSeleccionada($event)" class="w-full text-gray-300">
+        </div>
+
+        <div>
+          <label class="block text-gray-300 mb-2">Empresa</label>
+          <select formControlName="IdEmpresa" (change)="filtrarSucursales()" class="w-full bg-gray-700 border border-gray-600 text-white px-3 py-2 rounded">
+            <option value="">Selecciona...</option>
+            <option *ngFor="let empresa of empresas" [value]="empresa.IdEmpresa">{{ empresa.Nombre }}</option>
+          </select>
+        </div>
+
+        <div>
           <label class="block text-gray-300 mb-2">Género</label>
           <select 
             formControlName="IdGenero" 
@@ -98,7 +111,7 @@
             formControlName="IdSucursal" 
             class="w-full bg-gray-700 border border-gray-600 text-white px-3 py-2 rounded">
             <option value="">Selecciona...</option>
-            <option *ngFor="let s of sucursales" [value]="s.IdSucursal">{{ s.Nombre }}</option>
+            <option *ngFor="let s of sucursalesFiltradas" [value]="s.IdSucursal">{{ s.Nombre }}</option>
           </select>
         </div>
 

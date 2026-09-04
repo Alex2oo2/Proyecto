@@ -65,6 +65,7 @@ export interface Usuario {
   Pregunta: string;
   Respuesta: string;
   RequiereCambiarPassword?: number | boolean;
+  Fotografia?: string | null;
 }
 
 export interface Modulo {

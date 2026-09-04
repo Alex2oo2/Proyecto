@@ -40,6 +40,7 @@ export class AuthService {
         if (response.token) {
           localStorage.setItem('auth_token', response.token);
           localStorage.setItem('current_user', JSON.stringify(response.usuario));
+          localStorage.setItem('must_change_password', String(response.requiereCambiarPassword));
           this.tokenSubject.next(response.token);
         }
       }),
@@ -51,8 +52,15 @@ export class AuthService {
   }
 
   logout(): void {
+    const token = this.getToken();
+    if (token) {
+      this.http.post(`${this.apiUrl}/logout`, {}, {
+        headers: new HttpHeaders({ Authorization: `Bearer ${token}` })
+      }).subscribe({ error: error => console.error('Logout error:', error) });
+    }
     localStorage.removeItem('auth_token');
     localStorage.removeItem('current_user');
+    localStorage.removeItem('must_change_password');
     this.tokenSubject.next(null);
   }
 
@@ -70,5 +78,13 @@ export class AuthService {
 
   isAuthenticated(): boolean {
     return !!this.getToken();
+  }
+
+  mustChangePassword(): boolean {
+    return localStorage.getItem('must_change_password') === 'true';
+  }
+
+  clearMustChangePassword(): void {
+    localStorage.removeItem('must_change_password');
   }
 }

@@ -1,5 +1,8 @@
 const usuarioModel = require('../Model/usuarioModel.js');
 const bcrypt = require('bcrypt');
+const empresaModel = require('../Model/empresaModel.js');
+const sucursalModel = require('../Model/sucursalModel.js');
+const { validatePasswordPolicy } = require('../utils/passwordValidator.js');
 
 async function obtenerTodos(req, res) {
   try {
@@ -43,7 +46,26 @@ async function crear(req, res) {
     return res.status(400).json({ mensaje: 'Faltan campos obligatorios para crear el usuario' });
   }
 
+  const idSucursal = Number(IdSucursal);
+  if (!Number.isInteger(idSucursal) || idSucursal <= 0) {
+    return res.status(400).json({ mensaje: 'IdSucursal no es válido' });
+  }
+
   try {
+    const sucursal = await sucursalModel.obtenerPorId(idSucursal);
+    if (!sucursal) {
+      return res.status(400).json({ mensaje: `La sucursal ${idSucursal} no existe` });
+    }
+
+    const politica = await empresaModel.obtenerPoliticasPasswordPorSucursal(idSucursal);
+    if (!politica) {
+      return res.status(400).json({ mensaje: 'La sucursal no tiene una empresa válida asociada' });
+    }
+    const validacionPassword = validatePasswordPolicy(Password, politica);
+    if (!validacionPassword.isValid) {
+      return res.status(400).json({ mensaje: 'La contraseña no cumple la política de la empresa', errores: validacionPassword.errors });
+    }
+
     const usuarioExistente = await usuarioModel.obtenerPorId(IdUsuario);
     
     if (usuarioExistente) {
@@ -52,6 +74,7 @@ async function crear(req, res) {
 
     const datosUsuario = {
       ...req.body,
+      IdSucursal: idSucursal,
       UsuarioCreacion: req.usuario.IdUsuario
     };
 

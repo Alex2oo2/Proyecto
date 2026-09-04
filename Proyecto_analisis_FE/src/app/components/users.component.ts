@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';import { FormsModule } from '@angular/forms';import { ApiService } from '../services/api.service';
-import { Usuario, Genero, StatusUsuario, Sucursal, Role } from '../models/index';
+import { Usuario, Empresa, Genero, StatusUsuario, Sucursal, Role } from '../models/index';
 
 @Component({
   selector: 'app-users',
@@ -12,9 +12,11 @@ import { Usuario, Genero, StatusUsuario, Sucursal, Role } from '../models/index'
 })
 export class UsersComponent implements OnInit {
   usuarios: Usuario[] = [];
+  empresas: Empresa[] = [];
   generos: Genero[] = [];
   statusUsuarios: StatusUsuario[] = [];
   sucursales: Sucursal[] = [];
+  sucursalesFiltradas: Sucursal[] = [];
   roles: Role[] = [];
   
   showForm = false;
@@ -25,6 +27,7 @@ export class UsersComponent implements OnInit {
   loading = false;
   error: string | null = null;
   success: string | null = null;
+  fotografia: string | null = null;
 
   constructor(
     private apiService: ApiService,
@@ -38,6 +41,7 @@ export class UsersComponent implements OnInit {
       Password: ['', Validators.required],
       CorreoElectronico: ['', [Validators.required, Validators.email]],
       TelefonoMovil: [''],
+      IdEmpresa: ['', Validators.required],
       IdGenero: ['', Validators.required],
       IdSucursal: ['', Validators.required],
       IdRole: ['', Validators.required],
@@ -70,12 +74,17 @@ export class UsersComponent implements OnInit {
   loadDropdowns() {
     this.apiService.getGeneros().subscribe(data => this.generos = data);
     this.apiService.getStatusUsuarios().subscribe(data => this.statusUsuarios = data);
-    this.apiService.getSucursales().subscribe(data => this.sucursales = data);
+    this.apiService.getEmpresas().subscribe(data => this.empresas = data);
+    this.apiService.getSucursales().subscribe(data => {
+      this.sucursales = data;
+      this.sucursalesFiltradas = data;
+    });
     this.apiService.getRoles().subscribe(data => this.roles = data);
   }
 
   editUser(usuario: Usuario) {
     this.isEditMode = true;
+    this.fotografia = usuario.Fotografia || null;
     this.selectedUserId = usuario.IdUsuario;
     ['IdUsuario', 'FechaNacimiento', 'Password', 'Pregunta', 'Respuesta'].forEach(field => {
       this.userForm.get(field)?.clearValidators();
@@ -88,6 +97,7 @@ export class UsersComponent implements OnInit {
       FechaNacimiento: usuario.FechaNacimiento,
       CorreoElectronico: usuario.CorreoElectronico,
       TelefonoMovil: usuario.TelefonoMovil,
+      IdEmpresa: this.sucursales.find(s => s.IdSucursal === usuario.IdSucursal)?.IdEmpresa,
       IdGenero: usuario.IdGenero,
       IdSucursal: usuario.IdSucursal,
       IdRole: usuario.IdRole,
@@ -97,7 +107,19 @@ export class UsersComponent implements OnInit {
       RequiereCambiarPassword: usuario.RequiereCambiarPassword === 1
     });
     this.userForm.get('IdUsuario')?.disable();
+    this.filtrarSucursales();
     this.showForm = true;
+  }
+
+  filtrarSucursales(): void {
+    const idEmpresa = Number(this.userForm.get('IdEmpresa')?.value);
+    this.sucursalesFiltradas = idEmpresa
+      ? this.sucursales.filter(sucursal => sucursal.IdEmpresa === idEmpresa)
+      : [];
+    const idSucursal = Number(this.userForm.get('IdSucursal')?.value);
+    if (!this.sucursalesFiltradas.some(sucursal => sucursal.IdSucursal === idSucursal)) {
+      this.userForm.get('IdSucursal')?.setValue('');
+    }
   }
 
   deleteUser(id: string) {
@@ -121,9 +143,11 @@ export class UsersComponent implements OnInit {
     }
 
     const formData = this.userForm.getRawValue();
+    const { IdEmpresa, ...usuarioData } = formData;
+    usuarioData.Fotografia = this.fotografia;
 
     if (this.isEditMode) {
-      this.apiService.actualizarUsuario(formData.IdUsuario, formData).subscribe({
+      this.apiService.actualizarUsuario(formData.IdUsuario, usuarioData).subscribe({
         next: () => {
           this.success = 'Usuario actualizado exitosamente';
           this.resetForm();
@@ -134,7 +158,7 @@ export class UsersComponent implements OnInit {
         }
       });
     } else {
-      this.apiService.crearUsuario(formData).subscribe({
+      this.apiService.crearUsuario(usuarioData).subscribe({
         next: () => {
           this.success = 'Usuario creado exitosamente';
           this.resetForm();
@@ -149,6 +173,8 @@ export class UsersComponent implements OnInit {
 
   resetForm() {
     this.userForm.reset();
+    this.sucursalesFiltradas = [];
+    this.fotografia = null;
     this.userForm.get('IdUsuario')?.setValidators(Validators.required);
     ['FechaNacimiento', 'Password', 'Pregunta', 'Respuesta'].forEach(field => {
       this.userForm.get(field)?.setValidators(Validators.required);
@@ -168,6 +194,20 @@ export class UsersComponent implements OnInit {
     if (!this.showForm) {
       this.resetForm();
     }
+  }
+
+  onFotografiaSeleccionada(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/') || file.size > 2 * 1024 * 1024) {
+      this.error = 'La fotografía debe ser una imagen de máximo 2 MB';
+      input.value = '';
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => this.fotografia = String(reader.result).split(',')[1] || null;
+    reader.readAsDataURL(file);
   }
 
   getNombreGenero(idGenero: number): string {

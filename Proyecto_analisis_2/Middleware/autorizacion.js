@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const roleOpcionModel = require('../Model/roleOpcionModel.js');
+const { db } = require('../Config/db.js');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -12,12 +14,25 @@ function autenticar(req, res, next) {
     return res.status(401).json({ mensaje: 'No autorizado: token no proporcionado.' });
   }
 
-  jwt.verify(token, JWT_SECRET, (err, payload) => {
+  jwt.verify(token, JWT_SECRET, async (err, payload) => {
     if (err) {
       return res.status(401).json({ mensaje: 'Token inválido o expirado.' });
     }
-    req.usuario = payload; // { IdUsuario, IdRole, NombreRole }
-    next();
+    try {
+      const [rows] = await db.query(
+        'SELECT SesionActual FROM USUARIO WHERE IdUsuario = ?',
+        [payload.IdUsuario]
+      );
+      const sesionHash = crypto.createHash('sha256').update(token).digest('hex');
+      if (!rows[0] || rows[0].SesionActual !== sesionHash) {
+        return res.status(401).json({ mensaje: 'Sesión cerrada o reemplazada.' });
+      }
+      req.usuario = payload; // { IdUsuario, IdRole, NombreRole }
+      next();
+    } catch (error) {
+      console.error('Error al validar la sesión:', error);
+      res.status(500).json({ mensaje: 'Error interno al validar la sesión.' });
+    }
   });
 }
 

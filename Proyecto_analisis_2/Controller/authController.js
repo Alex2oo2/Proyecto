@@ -4,6 +4,7 @@ const empresaModel = require('../Model/empresaModel.js');
 const { validatePasswordPolicy } = require('../utils/passwordValidator.js');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 
 // IDs fijos según el seed de STATUS_USUARIO: 1=Activo, 2=Bloqueado, 3=Inactivo
 const STATUS_ACTIVO = 1;
@@ -70,7 +71,14 @@ async function login(req, res) {
     const politica = await empresaModel.obtenerPoliticasPasswordPorUsuario(usuario.IdUsuario);
     const maxIntentos = (politica && politica.PasswordIntentosAntesDeBloquear) || 3;
 
-    const passwordValida = await bcrypt.compare(Password, usuario.Password);
+    let passwordValida = await bcrypt.compare(Password, usuario.Password);
+    const passwordLegacyValida = /^[a-f0-9]{32}$/i.test(usuario.Password)
+      && crypto.createHash('md5').update(Password).digest('hex') === usuario.Password;
+    let passwordMigrada = false;
+    if (!passwordValida && passwordLegacyValida) {
+      passwordValida = true;
+      passwordMigrada = true;
+    }
     if (!passwordValida) {
       const intentos = await usuarioModel.registrarIntentoFallido(Username, usuario.IntentosDeAcceso || 0);
 
@@ -100,6 +108,15 @@ async function login(req, res) {
       });
     }
 
+    const fechaCambio = usuario.UltimaFechaCambioPassword
+      ? new Date(usuario.UltimaFechaCambioPassword)
+      : null;
+    const diasVigencia = Number(politica?.PasswordCantidadCaducidadDias || 0);
+    const passwordCaducada = Boolean(
+      fechaCambio && diasVigencia > 0 &&
+      Date.now() - fechaCambio.getTime() >= diasVigencia * 24 * 60 * 60 * 1000
+    );
+
     // Login correcto: genera token, actualiza último ingreso, resetea intentos
     const token = jwt.sign(
       { IdUsuario: usuario.IdUsuario, IdRole: usuario.IdRole, NombreRole: usuario.NombreRole },
@@ -107,7 +124,11 @@ async function login(req, res) {
       { expiresIn: '8h' }
     );
 
-    await usuarioModel.registrarLoginExitoso(Username, STATUS_ACTIVO);
+    await usuarioModel.registrarSesion(Username, token);
+    if (passwordMigrada) {
+      const hashedPassword = await bcrypt.hash(Password, 10);
+      await usuarioModel.actualizarPasswordMigrada(Username, hashedPassword);
+    }
 
     await bitacoraModel.registrarAcceso({
       IdUsuario: usuario.IdUsuario,
@@ -120,7 +141,7 @@ async function login(req, res) {
     res.json({
       mensaje: '¡Inicio de sesión exitoso!',
       token,
-      requiereCambiarPassword: usuario.RequiereCambiarPassword === 1,
+      requiereCambiarPassword: usuario.RequiereCambiarPassword === 1 || passwordCaducada,
       usuario: {
         IdUsuario: usuario.IdUsuario,
         Nombre: usuario.Nombre,

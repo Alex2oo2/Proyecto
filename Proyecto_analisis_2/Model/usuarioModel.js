@@ -1,10 +1,12 @@
 const { db } = require('../Config/db.js');
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 
 async function buscarParaLogin(idUsuario, password) {
   const sql = `
     SELECT u.IdUsuario, u.Nombre, u.Apellido, u.CorreoElectronico, u.IdStatusUsuario, 
-           u.IntentosDeAcceso, u.FechaModificacion, u.IdRole, r.Nombre as NombreRole
+           u.IntentosDeAcceso, u.RequiereCambiarPassword, u.UltimaFechaCambioPassword,
+           u.FechaModificacion, u.IdRole, r.Nombre as NombreRole
     FROM USUARIO u
     INNER JOIN ROLE r ON u.IdRole = r.IdRole
     WHERE u.IdUsuario = ? AND u.Password = ?
@@ -16,7 +18,8 @@ async function buscarParaLogin(idUsuario, password) {
 async function obtenerPorId(idUsuario) {
   const sql = `
     SELECT u.IdUsuario, u.Password, u.Nombre, u.Apellido, u.CorreoElectronico, u.IdStatusUsuario, 
-           u.IntentosDeAcceso, u.FechaModificacion, u.IdRole, r.Nombre as NombreRole, u.Pregunta, u.Respuesta
+           u.IntentosDeAcceso, u.RequiereCambiarPassword, u.UltimaFechaCambioPassword,
+           u.FechaModificacion, u.IdRole, r.Nombre as NombreRole, u.Pregunta, u.Respuesta
     FROM USUARIO u
     INNER JOIN ROLE r ON u.IdRole = r.IdRole
     WHERE u.IdUsuario = ?
@@ -52,9 +55,27 @@ async function registrarLoginExitoso(idUsuario, idStatusActivo) {
   await db.query(sql, [idStatusActivo, idUsuario]);
 }
 
+async function registrarSesion(idUsuario, sesion) {
+  const sesionHash = crypto.createHash('sha256').update(sesion).digest('hex');
+  const sql = `
+    UPDATE USUARIO
+    SET SesionActual = ?, IntentosDeAcceso = 0, IdStatusUsuario = ?,
+        UltimaFechaIngreso = NOW()
+    WHERE IdUsuario = ?
+  `;
+  await db.query(sql, [sesionHash, 1, idUsuario]);
+}
+
 async function cerrarSesion(idUsuario) {
   const sql = `UPDATE USUARIO SET SesionActual = NULL WHERE IdUsuario = ?`;
   await db.query(sql, [idUsuario]);
+}
+
+async function actualizarPasswordMigrada(idUsuario, hashedPassword) {
+  await db.query(
+    'UPDATE USUARIO SET Password = ?, UltimaFechaCambioPassword = NOW() WHERE IdUsuario = ?',
+    [hashedPassword, idUsuario]
+  );
 }
 
 // Reemplaza tu resetearIntentosYEstado por registrarLoginExitoso en el controller.
@@ -64,7 +85,7 @@ async function crearUsuario(usuario) {
   const { 
     IdUsuario, Nombre, Apellido, FechaNacimiento, Password, 
     IdGenero, CorreoElectronico, TelefonoMovil, IdSucursal, 
-    Pregunta, Respuesta, IdRole, RequiereCambiarPassword, UsuarioCreacion 
+    Pregunta, Respuesta, IdRole, RequiereCambiarPassword, Fotografia, UsuarioCreacion 
   } = usuario;
   
   const salt = await bcrypt.genSalt(10);
@@ -76,14 +97,14 @@ async function crearUsuario(usuario) {
       Password, IdGenero, IntentosDeAcceso, CorreoElectronico, 
       RequiereCambiarPassword, TelefonoMovil, IdSucursal, 
       Pregunta, Respuesta, IdRole, FechaCreacion, 
-      UsuarioCreacion, FechaModificacion, UsuarioModificacion
+      UsuarioCreacion, Fotografia, FechaModificacion, UsuarioModificacion
     )
     VALUES (
       ?, ?, ?, ?, 1, 
       ?, ?, 0, ?, 
       ?, ?, ?, 
       ?, ?, ?, NOW(), 
-      ?, NOW(), ?
+      ?, ?, NULL, NULL
     )
   `;
   
@@ -91,9 +112,11 @@ async function crearUsuario(usuario) {
 
   await db.query(sql, [
     IdUsuario, Nombre, Apellido, FechaNacimiento, 
-    hashedPassword, IdGenero, CorreoElectronico, 
-    TelefonoMovil, IdSucursal, Pregunta, Respuesta, 
-    IdRole, RequiereCambiarPassword ? 1 : 0, creador, creador
+    hashedPassword, IdGenero, CorreoElectronico,
+    RequiereCambiarPassword ? 1 : 0, TelefonoMovil, IdSucursal,
+    Pregunta, Respuesta, IdRole,
+    creador,
+    Fotografia ? Buffer.from(Fotografia, 'base64') : null
   ]);
 }
 
@@ -154,7 +177,9 @@ module.exports = {
   registrarIntentoFallido,
   bloquearUsuario,
   registrarLoginExitoso,
+  registrarSesion,
   cerrarSesion,
+  actualizarPasswordMigrada,
   crearUsuario,
   actualizarContraseña,
   obtenerTodos,

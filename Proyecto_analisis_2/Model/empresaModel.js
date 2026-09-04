@@ -108,6 +108,20 @@ async function obtenerPoliticasPasswordPorUsuario(idUsuario) {
   return rows[0];
 }
 
+async function obtenerPoliticasPasswordPorSucursal(idSucursal) {
+  const sql = `
+    SELECT e.PasswordCantidadMayusculas, e.PasswordCantidadMinusculas,
+      e.PasswordCantidadCaracteresEspeciales, e.PasswordCantidadCaducidadDias,
+      e.PasswordLargo, e.PasswordIntentosAntesDeBloquear,
+      e.PasswordCantidadNumeros, e.PasswordCantidadPreguntasValidar
+    FROM EMPRESA e
+    INNER JOIN SUCURSAL s ON s.IdEmpresa = e.IdEmpresa
+    WHERE s.IdSucursal = ?
+  `;
+  const [rows] = await db.query(sql, [idSucursal]);
+  return rows[0];
+}
+
 // Y agregarla al module.exports:
 // module.exports = { ..., obtenerPoliticasPasswordPorUsuario };
 
@@ -116,6 +130,7 @@ module.exports = {
   obtenerPorId, 
   obtenerPoliticasPassword,
   obtenerPoliticasPasswordPorUsuario,
+  obtenerPoliticasPasswordPorSucursal,
   crear, 
   actualizar, 
   eliminar 
