@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ApiService } from '../services/api.service';
+import { PermisosService } from '../services/permisos.service';
 import { Empresa } from '../models/index';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -26,6 +27,7 @@ export class CompaniesComponent implements OnInit, OnDestroy {
 
   constructor(
     private apiService: ApiService,
+    public permisosService: PermisosService,
     private fb: FormBuilder
   ) {
     this.form = this.fb.group({

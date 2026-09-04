@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';import { FormsModule } from '@angular/forms';import { ApiService } from '../services/api.service';
+import { PermisosService } from '../services/permisos.service';
 import { Usuario, Empresa, Genero, StatusUsuario, Sucursal, Role } from '../models/index';
 
 @Component({
@@ -31,6 +32,7 @@ export class UsersComponent implements OnInit {
 
   constructor(
     private apiService: ApiService,
+    public permisosService: PermisosService,
     private fb: FormBuilder
   ) {
     this.userForm = this.fb.group({

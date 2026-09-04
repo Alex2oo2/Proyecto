@@ -6,6 +6,10 @@ const { autenticar, verificarPermisos } = require('../Middleware/autorizacion.js
 
 router.use(autenticar);
 
+// Cualquier usuario autenticado puede consultar SUS PROPIOS permisos
+// (no requiere verificarPermisos: no es una opción de menú, es info de sesión).
+router.get('/mis-permisos', seguridadController.obtenerMisPermisos);
+
 // OJO: en la tabla OPCION los nombres son 'Modulos' y 'Menus', sin tilde
 router.get('/modulos', verificarPermisos('Modulos', 'Consultar'), seguridadController.obtenerModulos);
 router.post('/modulos', verificarPermisos('Modulos', 'Alta'), seguridadController.crearModulo);

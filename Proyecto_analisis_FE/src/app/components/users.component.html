@@ -4,6 +4,7 @@
     <div class="flex justify-between items-center mb-8">
       <h1 class="text-4xl font-bold text-white">Gestión de Usuarios</h1>
       <button 
+        *ngIf="showForm || permisosService.puedeCrear('Usuarios')"
         (click)="toggleForm()"
         class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition">
         {{ showForm ? 'Cancelar' : 'Agregar Usuario' }}
@@ -191,11 +192,13 @@
             <td class="px-6 py-3 text-gray-300">{{ getNombreStatus(usuario.IdStatusUsuario || 1) }}</td>
             <td class="px-6 py-3 text-gray-300">
               <button 
+                *ngIf="permisosService.puedeEditar('Usuarios')"
                 (click)="editUser(usuario)" 
                 class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded mr-2">
                 Editar
               </button>
               <button 
+                *ngIf="permisosService.puedeEliminar('Usuarios')"
                 (click)="deleteUser(usuario.IdUsuario)" 
                 class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded">
                 Eliminar

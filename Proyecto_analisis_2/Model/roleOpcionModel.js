@@ -43,6 +43,25 @@ async function guardarPermiso(datos) {
   await db.query(sql, [IdRole, IdOpcion, Alta, Baja, Cambio, Imprimir, Exportar, Usuario, Usuario]);
 }
 
+// 3. Obtener TODOS los permisos de un Role, indexados por Nombre de Opción.
+// Se usa para que el frontend sepa qué botones (Alta/Baja/Cambio/Imprimir/Exportar) mostrar.
+async function obtenerPermisosPorRole(idRole) {
+  const sql = `
+    SELECT
+      o.Nombre AS NombreOpcion,
+      ro.Alta,
+      ro.Baja,
+      ro.Cambio,
+      ro.Imprimir,
+      ro.Exportar
+    FROM ROLE_OPCION ro
+    INNER JOIN OPCION o ON ro.IdOpcion = o.IdOpcion
+    WHERE ro.IdRole = ?
+  `;
+  const [rows] = await db.query(sql, [idRole]);
+  return rows;
+}
+
 async function verificarPermiso(idRole, nombreOpcion, tipoPermiso) {
   // If Consultar is requested, check if user has ANY permission (Alta, Baja, Cambio, Imprimir, or Exportar)
   // Otherwise, check the specific permission type
@@ -66,4 +85,4 @@ async function verificarPermiso(idRole, nombreOpcion, tipoPermiso) {
   return rows.length > 0 ? rows[0].TienePermiso : 0;
 }
 
-module.exports = { obtenerMatrizPermisos, guardarPermiso, verificarPermiso };
+module.exports = { obtenerMatrizPermisos, guardarPermiso, verificarPermiso, obtenerPermisosPorRole };

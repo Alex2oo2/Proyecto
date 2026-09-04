@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ApiService } from '../services/api.service';
+import { PermisosService } from '../services/permisos.service';
 import { Menu, Modulo } from '../models/index';
 
 @Component({
@@ -21,7 +22,7 @@ export class MenusComponent implements OnInit {
   error: string | null = null;
   success: string | null = null;
 
-  constructor(private apiService: ApiService, private fb: FormBuilder) {
+  constructor(private apiService: ApiService, public permisosService: PermisosService, private fb: FormBuilder) {
     this.form = this.fb.group({
       IdModulo: ['', Validators.required],
       Nombre: ['', Validators.required],

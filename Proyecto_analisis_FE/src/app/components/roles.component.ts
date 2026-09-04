@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../services/api.service';
+import { PermisosService } from '../services/permisos.service';
 import { Role, Modulo, MatrizPermisos } from '../models/index';
 
 @Component({
@@ -30,6 +31,7 @@ export class RolesComponent implements OnInit {
 
   constructor(
     private apiService: ApiService,
+    public permisosService: PermisosService,
     private fb: FormBuilder
   ) {
     this.roleForm = this.fb.group({

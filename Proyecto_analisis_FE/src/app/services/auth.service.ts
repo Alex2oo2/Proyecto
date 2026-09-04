@@ -61,6 +61,7 @@ export class AuthService {
     localStorage.removeItem('auth_token');
     localStorage.removeItem('current_user');
     localStorage.removeItem('must_change_password');
+    localStorage.removeItem('permisos_usuario');
     this.tokenSubject.next(null);
   }
 

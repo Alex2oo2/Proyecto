@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { PermisosService } from '../services/permisos.service';
 
 @Component({
   selector: 'app-login',
@@ -19,6 +20,7 @@ export class LoginComponent {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
+    private permisosService: PermisosService,
     private router: Router
   ) {
     this.loginForm = this.fb.group({
@@ -46,11 +48,15 @@ export class LoginComponent {
     this.authService.login(username, password).subscribe({
       next: (response) => {
         this.isLoading = false;
-        if (response.requiereCambiarPassword) {
-          this.router.navigate(['/dashboard/change-password']);
-        } else {
-          this.router.navigate(['/dashboard']);
-        }
+        // Se cargan los permisos del rol antes de navegar, para que el
+        // dashboard ya sepa qué botones mostrar u ocultar.
+        this.permisosService.cargarPermisos().subscribe(() => {
+          if (response.requiereCambiarPassword) {
+            this.router.navigate(['/dashboard/change-password']);
+          } else {
+            this.router.navigate(['/dashboard']);
+          }
+        });
       },
       error: (err) => {
         this.isLoading = false;

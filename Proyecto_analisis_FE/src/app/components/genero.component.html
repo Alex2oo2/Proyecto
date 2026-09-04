@@ -4,7 +4,7 @@
       <h2 class="text-2xl font-bold text-white">Gestion de Genero</h2>
       <p class="text-gray-400 mt-1">Administra los generos del sistema</p>
     </div>
-    <button *ngIf="!showForm" (click)="openForm()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition">
+    <button *ngIf="!showForm && permisosService.puedeCrear('Generos')" (click)="openForm()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition">
       + Nuevo Genero
     </button>
   </div>
@@ -32,8 +32,8 @@
     <div *ngFor="let genero of generos" class="bg-gray-800 border border-gray-700 rounded-lg p-4 hover:border-gray-600 transition flex justify-between items-center gap-4">
       <div><p class="text-lg font-semibold text-white">{{ genero.Nombre }}</p><p class="text-gray-400 text-sm">ID: {{ genero.IdGenero }}</p></div>
       <div class="flex gap-2">
-        <button (click)="openForm(genero)" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition">Editar</button>
-        <button (click)="deleteGenero(genero.IdGenero)" class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-sm rounded transition">Eliminar</button>
+        <button *ngIf="permisosService.puedeEditar('Generos')" (click)="openForm(genero)" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition">Editar</button>
+        <button *ngIf="permisosService.puedeEliminar('Generos')" (click)="deleteGenero(genero.IdGenero)" class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-sm rounded transition">Eliminar</button>
       </div>
     </div>
   </div>

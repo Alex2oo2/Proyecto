@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { ApiService } from '../services/api.service';
+import { PermisosService } from '../services/permisos.service';
 import { Genero } from '../models/index';
 
 @Component({
@@ -22,7 +23,7 @@ export class GeneroComponent implements OnInit, OnDestroy {
   form: FormGroup;
   private destroy$ = new Subject<void>();
 
-  constructor(private apiService: ApiService, private fb: FormBuilder) {
+  constructor(private apiService: ApiService, public permisosService: PermisosService, private fb: FormBuilder) {
     this.form = this.fb.group({
       Nombre: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]]
     });

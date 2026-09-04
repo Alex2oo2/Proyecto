@@ -161,10 +161,35 @@ async function guardarMatrizPermisos(req, res) {
   } catch (error) { res.status(500).json({ error: error.message }); }
 }
 
+// Devuelve los permisos (Alta/Baja/Cambio/Imprimir/Exportar) del ROL del usuario
+// autenticado, indexados por Nombre de Opción. El frontend los usa para
+// mostrar/ocultar botones de crear, editar y eliminar.
+async function obtenerMisPermisos(req, res) {
+  try {
+    const idRole = req.usuario.IdRole;
+    const permisos = await roleOpcionModel.obtenerPermisosPorRole(idRole);
+
+    // Se transforma el arreglo en un objeto { NombreOpcion: { Alta, Baja, Cambio, Imprimir, Exportar } }
+    // para que sea más simple de consultar en el frontend.
+    const mapa = {};
+    permisos.forEach(p => {
+      mapa[p.NombreOpcion] = {
+        Alta: !!p.Alta,
+        Baja: !!p.Baja,
+        Cambio: !!p.Cambio,
+        Imprimir: !!p.Imprimir,
+        Exportar: !!p.Exportar
+      };
+    });
+
+    res.json(mapa);
+  } catch (error) { res.status(500).json({ error: error.message }); }
+}
+
 module.exports = {
   obtenerModulos, crearModulo, actualizarModulo, eliminarModulo,
   obtenerMenus, crearMenu, actualizarMenu, eliminarMenu,
   obtenerOpciones, crearOpcion, actualizarOpcion, eliminarOpcion,
   obtenerRoles, crearRole, actualizarRole, eliminarRole,
-  obtenerMatrizPermisos, guardarMatrizPermisos
+  obtenerMatrizPermisos, guardarMatrizPermisos, obtenerMisPermisos
 };
