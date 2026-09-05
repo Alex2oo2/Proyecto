@@ -1,0 +1,64 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-3xl font-bold text-white">Gestión de Permisos</h1>
+    <p class="text-slate-400 mt-1">Administra los permisos asignados a cada rol</p>
+  </div>
+
+  <div *ngIf="error" class="bg-red-500/20 border border-red-500/50 text-red-200 p-4 rounded-lg backdrop-blur">
+    {{ error }}
+  </div>
+  <div *ngIf="success" class="bg-green-500/20 border border-green-500/50 text-green-200 p-4 rounded-lg backdrop-blur">
+    {{ success }}
+  </div>
+
+  <div class="bg-gradient-to-br from-slate-800 to-slate-900 p-6 rounded-xl border border-slate-700 shadow-xl">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-semibold text-slate-300 mb-2">Seleccionar Rol</label>
+        <select [(ngModel)]="selectedRoleId" (change)="loadPermissions()" class="w-full bg-slate-700/50 border border-slate-600 text-white px-4 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option *ngFor="let role of roles" [ngValue]="role.IdRole">{{ role.Nombre }}</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-slate-300 mb-2">Seleccionar Módulo</label>
+        <select [(ngModel)]="selectedModuloId" (change)="loadPermissions()" class="w-full bg-slate-700/50 border border-slate-600 text-white px-4 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option *ngFor="let modulo of modulos" [ngValue]="modulo.IdModulo">{{ modulo.Nombre }}</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl border border-slate-700 overflow-hidden shadow-xl">
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="bg-gradient-to-r from-slate-700 to-slate-800 border-b border-slate-700">
+          <tr>
+            <th class="px-6 py-4 text-left text-slate-300 font-semibold">Opción</th>
+            <th class="px-4 py-4 text-center text-slate-300 font-semibold">Alta</th>
+            <th class="px-4 py-4 text-center text-slate-300 font-semibold">Baja</th>
+            <th class="px-4 py-4 text-center text-slate-300 font-semibold">Cambio</th>
+            <th class="px-4 py-4 text-center text-slate-300 font-semibold">Imprimir</th>
+            <th class="px-4 py-4 text-center text-slate-300 font-semibold">Exportar</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-700">
+          <tr *ngFor="let permiso of matrizPermisos" class="hover:bg-slate-700/50 transition-colors">
+            <td class="px-6 py-4 text-slate-200 font-medium">{{ permiso.NombreOpcion }}</td>
+            <td *ngFor="let tipo of permissionTypes" class="px-4 py-4 text-center">
+              <input type="checkbox" [checked]="permiso[tipo] === 1" (change)="togglePermiso(permiso, tipo)" class="w-5 h-5 cursor-pointer rounded">
+            </td>
+          </tr>
+          <tr *ngIf="matrizPermisos.length === 0">
+            <td colspan="6" class="px-4 py-8 text-center text-slate-400">No hay opciones disponibles para este módulo</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="flex justify-end">
+    <button (click)="savePermisos()" [disabled]="loading || matrizPermisos.length === 0 || !selectedRoleId" class="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 disabled:opacity-50 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200">
+      Guardar Permisos
+    </button>
+  </div>
+</div>

@@ -5,6 +5,7 @@ import { ChangePasswordComponent } from './components/change-password.component'
 import { ForgotPasswordComponent } from './components/forgot-password.component';
 import { UsersComponent } from './components/users.component';
 import { RolesComponent } from './components/roles.component';
+import { PermisosComponent } from './components/permisos.component';
 import { ModulosComponent } from './components/modulos.component';
 import { MenusComponent } from './components/menus.component';
 import { OpcionesComponent } from './components/opciones.component';
@@ -35,7 +36,8 @@ export const routes: Routes = [
       { path: 'modulos', component: ModulosComponent },
       { path: 'menus', component: MenusComponent },
       { path: 'opciones', component: OpcionesComponent },
-      { path: 'roles', component: RolesComponent }
+      { path: 'roles', component: RolesComponent },
+      { path: 'permisos', component: PermisosComponent }
     ]
   },
   

@@ -1,29 +1,24 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { FormsModule } from '@angular/forms';
 import { ApiService } from '../services/api.service';
 import { PermisosService } from '../services/permisos.service';
-import { Role, Modulo, MatrizPermisos } from '../models/index';
+import { Role } from '../models/index';
 
 @Component({
   selector: 'app-roles',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './roles.component.html',
   styleUrls: ['./roles.component.css']
 })
 export class RolesComponent implements OnInit {
   roles: Role[] = [];
-  modulos: Modulo[] = [];
-  matrizPermisos: MatrizPermisos[] = [];
   
   showForm = false;
   isEditMode = false;
-  showPermisosModal = false;
   roleForm: FormGroup;
   selectedRoleId: number | null = null;
-  selectedModuloId: number | null = null;
   
   loading = false;
   error: string | null = null;
@@ -41,7 +36,6 @@ export class RolesComponent implements OnInit {
 
   ngOnInit() {
     this.loadRoles();
-    this.loadModulos();
   }
 
   loadRoles() {
@@ -54,30 +48,6 @@ export class RolesComponent implements OnInit {
       error: (err) => {
         this.error = 'Error al cargar roles';
         this.loading = false;
-      }
-    });
-  }
-
-  loadModulos() {
-    this.apiService.getModulos().subscribe(data => this.modulos = data);
-  }
-
-  loadMatrizPermisos(idRole: number, idModulo: number) {
-    this.apiService.obtenerMatrizPermisos(idRole, idModulo).subscribe({
-      next: (data) => {
-        // Ensure all permission values are integers (1 or 0)
-        this.matrizPermisos = data.map(p => ({
-          ...p,
-          Alta: p.Alta ? 1 : 0,
-          Baja: p.Baja ? 1 : 0,
-          Cambio: p.Cambio ? 1 : 0,
-          Imprimir: p.Imprimir ? 1 : 0,
-          Exportar: p.Exportar ? 1 : 0
-        }));
-      },
-      error: (err) => {
-        this.error = 'Error al cargar matriz de permisos';
-        console.error('Error loading permissions:', err);
       }
     });
   }
@@ -137,49 +107,6 @@ export class RolesComponent implements OnInit {
     }
   }
 
-  openPermisosModal(role: Role) {
-    this.selectedRoleId = role.IdRole || null;
-    if (this.selectedRoleId && this.modulos.length > 0) {
-      this.selectedModuloId = this.modulos[0].IdModulo || null;
-      if (this.selectedModuloId) {
-        this.loadMatrizPermisos(this.selectedRoleId, this.selectedModuloId);
-      }
-    }
-    this.showPermisosModal = true;
-  }
-
-  savePermisos() {
-    if (!this.selectedRoleId) return;
-    
-    const permisosActualizados = this.matrizPermisos.map(p => ({
-      IdRole: this.selectedRoleId,
-      IdOpcion: p.IdOpcion,
-      Alta: p.Alta ? 1 : 0,
-      Baja: p.Baja ? 1 : 0,
-      Cambio: p.Cambio ? 1 : 0,
-      Imprimir: p.Imprimir ? 1 : 0,
-      Exportar: p.Exportar ? 1 : 0
-    }));
-
-    this.apiService.guardarMatrizPermisos(permisosActualizados).subscribe({
-      next: () => {
-        this.success = 'Permisos guardados exitosamente';
-        setTimeout(() => {
-          this.showPermisosModal = false;
-          this.success = null;
-        }, 1500);
-      },
-      error: (err) => {
-        this.error = 'Error al guardar permisos: ' + (err.error?.error || err.message);
-        console.error('Error saving permissions:', err);
-      }
-    });
-  }
-
-  togglePermiso(permiso: MatrizPermisos, tipo: 'Alta' | 'Baja' | 'Cambio' | 'Imprimir' | 'Exportar') {
-    permiso[tipo] = permiso[tipo] === 1 ? 0 : 1;
-  }
-
   resetForm() {
     this.roleForm.reset();
     this.showForm = false;
@@ -196,14 +123,4 @@ export class RolesComponent implements OnInit {
     }
   }
 
-  onModuloChange() {
-    if (this.selectedRoleId && this.selectedModuloId) {
-      this.loadMatrizPermisos(this.selectedRoleId, this.selectedModuloId);
-    }
-  }
-
-  closePermisosModal() {
-    this.showPermisosModal = false;
-    this.matrizPermisos = [];
-  }
 }

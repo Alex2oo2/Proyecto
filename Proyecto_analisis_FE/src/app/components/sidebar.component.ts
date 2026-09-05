@@ -34,6 +34,7 @@ export class SidebarComponent {
       children: [
         { label: 'Usuarios', icon: '', route: '/dashboard/usuarios' },
         { label: 'Roles', icon: '', route: '/dashboard/roles' },
+        { label: 'Permisos', icon: '', route: '/dashboard/permisos' },
         { label: 'Módulos', icon: '', route: '/dashboard/modulos' },
         { label: 'Menús', icon: '', route: '/dashboard/menus' },
         { label: 'Opciones', icon: '', route: '/dashboard/opciones' },
