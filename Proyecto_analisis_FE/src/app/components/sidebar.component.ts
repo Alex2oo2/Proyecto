@@ -37,7 +37,8 @@ export class SidebarComponent {
         { label: 'Módulos', icon: '', route: '/dashboard/modulos' },
         { label: 'Menús', icon: '', route: '/dashboard/menus' },
         { label: 'Opciones', icon: '', route: '/dashboard/opciones' },
-        { label: 'Genero', icon: '', route: '/dashboard/genero' }
+        { label: 'Genero', icon: '', route: '/dashboard/genero' },
+        { label: 'Estatus de usuario', icon: '', route: '/dashboard/status-usuarios' }
       ]
     },
     {
