@@ -143,9 +143,9 @@
         </div>
         <div class="flex gap-2">
           <button
-            *ngIf="permisosService.puedeEditar('Empresas')"
+            [disabled]="!permisosService.puedeEditar('Empresas')"
             (click)="openForm(empresa)"
-            class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition duration-200"
+            class="px-3 py-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm rounded transition duration-200"
           >
             Editar
           </button>

@@ -115,3 +115,25 @@ export interface MatrizPermisos {
   Imprimir: number;
   Exportar: number;
 }
+
+// Árbol de navegación dinámico (Modulo -> Menu -> Opcion), ya filtrado por
+// el backend según lo que el rol del usuario puede consultar. Lo usa el
+// sidebar para armar sus enlaces automáticamente, incluyendo módulos nuevos
+// creados por el administrador (ej. Contaduria) sin tocar código.
+export interface OpcionArbol {
+  idOpcion: number;
+  nombre: string;
+  pagina: string;
+}
+
+export interface MenuArbol {
+  idMenu: number;
+  nombre: string;
+  opciones: OpcionArbol[];
+}
+
+export interface ModuloArbol {
+  idModulo: number;
+  nombre: string;
+  menus: MenuArbol[];
+}

@@ -14,7 +14,8 @@ import {
   Opcion,
   Role,
   RoleOpcion,
-  MatrizPermisos
+  MatrizPermisos,
+  ModuloArbol
 } from '../models/index';
 
 @Injectable({
@@ -402,6 +403,21 @@ export class ApiService {
     return this.http.post(
       `${this.apiUrl}/seguridad/permisos`,
       permisos,
+      { headers: this.getHeaders() }
+    ).pipe(catchError(error => this.handleError(error)));
+  }
+
+  // ============ ARBOL DE MENU (sidebar dinamico) ============
+  obtenerArbolMenu(): Observable<ModuloArbol[]> {
+    return this.http.get<ModuloArbol[]>(
+      `${this.apiUrl}/seguridad/menu-arbol`,
+      { headers: this.getHeaders() }
+    ).pipe(catchError(error => this.handleError(error)));
+  }
+
+  obtenerNombreOpcion(id: number): Observable<{ IdOpcion: number; Nombre: string }> {
+    return this.http.get<{ IdOpcion: number; Nombre: string }>(
+      `${this.apiUrl}/seguridad/opcion-nombre/${id}`,
       { headers: this.getHeaders() }
     ).pipe(catchError(error => this.handleError(error)));
   }

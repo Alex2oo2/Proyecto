@@ -6,6 +6,7 @@ import { of } from 'rxjs';
 import { AuthService } from './auth.service';
 
 export interface PermisoOpcion {
+  Consultar: boolean;
   Alta: boolean;
   Baja: boolean;
   Cambio: boolean;
@@ -16,7 +17,7 @@ export interface PermisoOpcion {
 export type MapaPermisos = { [nombreOpcion: string]: PermisoOpcion };
 
 const PERMISO_VACIO: PermisoOpcion = {
-  Alta: false, Baja: false, Cambio: false, Imprimir: false, Exportar: false
+  Consultar: false, Alta: false, Baja: false, Cambio: false, Imprimir: false, Exportar: false
 };
 
 // Nombre de la clave usada para persistir los permisos en localStorage,
@@ -77,7 +78,16 @@ export class PermisosService {
     return this.permisosSubject.value[nombreOpcion] || PERMISO_VACIO;
   }
 
+  // Devuelve el mapa completo actual (snapshot), útil para el filtrado del sidebar.
+  obtenerMapaActual(): MapaPermisos {
+    return this.permisosSubject.value;
+  }
+
   // Métodos de conveniencia usados directamente en los *ngIf de los templates.
+  puedeVer(nombreOpcion: string): boolean {
+    return this.obtenerPermisoOpcion(nombreOpcion).Consultar;
+  }
+
   puedeCrear(nombreOpcion: string): boolean {
     return this.obtenerPermisoOpcion(nombreOpcion).Alta;
   }

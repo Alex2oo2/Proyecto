@@ -10,6 +10,13 @@ router.use(autenticar);
 // (no requiere verificarPermisos: no es una opción de menú, es info de sesión).
 router.get('/mis-permisos', seguridadController.obtenerMisPermisos);
 
+// Árbol de navegación (Modulo -> Menu -> Opcion) filtrado por permisos del
+// propio usuario. Igual que /mis-permisos, no requiere verificarPermisos.
+router.get('/menu-arbol', seguridadController.obtenerArbolMenu);
+
+// Nombre de una opción por Id, para la pantalla genérica "en construcción".
+router.get('/opcion-nombre/:id', seguridadController.obtenerNombreOpcion);
+
 // OJO: en la tabla OPCION los nombres son 'Modulos' y 'Menus', sin tilde
 router.get('/modulos', verificarPermisos('Modulos', 'Consultar'), seguridadController.obtenerModulos);
 router.post('/modulos', verificarPermisos('Modulos', 'Alta'), seguridadController.crearModulo);

@@ -5,7 +5,6 @@ import { ChangePasswordComponent } from './components/change-password.component'
 import { ForgotPasswordComponent } from './components/forgot-password.component';
 import { UsersComponent } from './components/users.component';
 import { RolesComponent } from './components/roles.component';
-import { PermisosComponent } from './components/permisos.component';
 import { ModulosComponent } from './components/modulos.component';
 import { MenusComponent } from './components/menus.component';
 import { OpcionesComponent } from './components/opciones.component';
@@ -13,6 +12,8 @@ import { CompaniesComponent } from './components/companies.component';
 import { BranchesComponent } from './components/branches.component';
 import { GeneroComponent } from './components/genero.component';
 import { StatusUsuarioComponent } from './components/status-usuario.component';
+import { AsignacionOpcionesComponent } from './components/asignacion-opciones.component';
+import { PaginaGenericaComponent } from './components/pagina-generica.component';
 import { authGuard } from './services/auth.guard';
 
 export const routes: Routes = [
@@ -31,13 +32,14 @@ export const routes: Routes = [
       { path: 'empresas', component: CompaniesComponent },
       { path: 'sucursales', component: BranchesComponent },
       { path: 'genero', component: GeneroComponent },
-      { path: 'status-usuarios', component: StatusUsuarioComponent },
+      { path: 'estatus-usuario', component: StatusUsuarioComponent },
+      { path: 'asignacion-opciones', component: AsignacionOpcionesComponent },
+      { path: 'opcion/:id', component: PaginaGenericaComponent },
       { path: 'usuarios', component: UsersComponent },
       { path: 'modulos', component: ModulosComponent },
       { path: 'menus', component: MenusComponent },
       { path: 'opciones', component: OpcionesComponent },
-      { path: 'roles', component: RolesComponent },
-      { path: 'permisos', component: PermisosComponent }
+      { path: 'roles', component: RolesComponent }
     ]
   },
   

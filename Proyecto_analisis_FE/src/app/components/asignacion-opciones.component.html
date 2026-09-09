@@ -1,0 +1,102 @@
+<div class="space-y-6">
+  <div>
+    <h2 class="text-2xl font-bold text-white">Asignación de Opciones a un Rol</h2>
+    <p class="text-gray-400 mt-1">Selecciona un Rol y un Módulo para configurar sus permisos.</p>
+    <p class="text-gray-500 text-xs mt-1">
+      "Consultar" se calcula automáticamente (se activa si el rol tiene algún otro permiso sobre la opción); no se guarda como columna independiente.
+    </p>
+  </div>
+
+  <div *ngIf="success" class="bg-green-900 border border-green-700 text-green-200 px-4 py-3 rounded-lg">{{ success }}</div>
+  <div *ngIf="error" class="bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded-lg">{{ error }}</div>
+
+  <!-- Combos de selección -->
+  <div class="bg-gray-800 border border-gray-700 rounded-lg p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div>
+      <label for="role" class="block text-sm font-medium text-gray-300 mb-2">Rol</label>
+      <select
+        id="role"
+        [(ngModel)]="selectedRoleId"
+        (ngModelChange)="onSeleccionCambio()"
+        class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500">
+        <option [ngValue]="null">-- Selecciona un rol --</option>
+        <option *ngFor="let role of roles" [ngValue]="role.IdRole">{{ role.Nombre }}</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="modulo" class="block text-sm font-medium text-gray-300 mb-2">Módulo</label>
+      <select
+        id="modulo"
+        [(ngModel)]="selectedModuloId"
+        (ngModelChange)="onSeleccionCambio()"
+        class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500">
+        <option [ngValue]="null">-- Selecciona un módulo --</option>
+        <option *ngFor="let modulo of modulos" [ngValue]="modulo.IdModulo">{{ modulo.Nombre }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Estado vacío -->
+  <div
+    *ngIf="!isLoading && matriz.length === 0 && (!selectedRoleId || !selectedModuloId)"
+    class="text-center py-12 bg-gray-800 border border-gray-700 rounded-lg">
+    <p class="text-gray-400">Selecciona un Rol y un Módulo para ver la cuadrícula de permisos.</p>
+  </div>
+
+  <div *ngIf="isLoading" class="flex justify-center py-8"><div class="text-gray-400">Cargando permisos...</div></div>
+
+  <!-- Cuadrícula de permisos -->
+  <div *ngIf="!isLoading && matriz.length > 0" class="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm text-left">
+        <thead class="bg-gray-900 text-gray-300 uppercase text-xs">
+          <tr>
+            <th class="px-4 py-3">Opción</th>
+            <th class="px-4 py-3 text-center">
+              Consultar
+              <span class="block normal-case text-[10px] text-gray-500 font-normal">(automático)</span>
+            </th>
+            <th *ngFor="let columna of columnas" class="px-4 py-3 text-center">{{ columna.label }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let fila of matriz" class="border-t border-gray-700 hover:bg-gray-750">
+            <td class="px-4 py-3 text-white font-medium whitespace-nowrap">{{ fila.NombreOpcion }}</td>
+            <td class="px-4 py-3 text-center">
+              <input
+                type="checkbox"
+                [checked]="consultarDe(fila)"
+                disabled
+                title="Se activa automáticamente si el rol tiene algún otro permiso sobre esta opción"
+                class="w-4 h-4 accent-gray-500 cursor-not-allowed" />
+            </td>
+            <td *ngFor="let columna of columnas" class="px-4 py-3 text-center">
+              <input
+                type="checkbox"
+                [checked]="fila[columna.key] === 1"
+                (change)="toggle(fila, columna.key)"
+                class="w-4 h-4 accent-blue-600 cursor-pointer" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="flex justify-end p-4 border-t border-gray-700">
+      <button
+        (click)="guardar()"
+        [disabled]="isSaving"
+        class="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white rounded-lg font-medium transition">
+        {{ isSaving ? 'Guardando...' : 'Guardar Permisos' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Estado vacío: módulo sin opciones -->
+  <div
+    *ngIf="!isLoading && matriz.length === 0 && selectedRoleId && selectedModuloId"
+    class="text-center py-12 bg-gray-800 border border-gray-700 rounded-lg">
+    <p class="text-gray-400">Este módulo no tiene opciones configuradas.</p>
+  </div>
+</div>
