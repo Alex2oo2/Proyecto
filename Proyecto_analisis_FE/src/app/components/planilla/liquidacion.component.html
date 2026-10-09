@@ -1,0 +1,168 @@
+<div class="space-y-6">
+  <div class="flex flex-wrap justify-between items-center gap-4">
+    <div>
+      <h2 class="text-2xl font-bold text-white">Liquidación de Empleado</h2>
+      <p class="text-gray-400 mt-1">Registra y calcula la liquidación de un empleado que finaliza su relación laboral</p>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <button *ngIf="permisosService.puedeImprimir(opcion)" (click)="imprimirListado()" [disabled]="exportando" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 disabled:opacity-50 text-white rounded-lg font-medium transition">
+        Imprimir (PDF)
+      </button>
+      <button *ngIf="permisosService.puedeExportar(opcion)" (click)="exportarListado()" [disabled]="exportando" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-600 disabled:opacity-50 text-white rounded-lg font-medium transition">
+        Exportar (Excel)
+      </button>
+      <button *ngIf="!mostrarFormulario && permisosService.puedeCrear(opcion)" (click)="abrirFormulario()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition">
+        + Nueva liquidación
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="success" class="bg-green-900 border border-green-700 text-green-200 px-4 py-3 rounded-lg">{{ success }}</div>
+  <div *ngIf="error" class="bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded-lg">{{ error }}</div>
+
+  <div *ngIf="mostrarFormulario" class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+    <div class="xl:col-span-2 bg-gray-800 border border-gray-700 rounded-lg p-6">
+      <h3 class="text-xl font-bold text-white mb-1">{{ editando ? 'Editar liquidación No. ' + editando.IdLiquidacion : 'Nueva liquidación' }}</h3>
+      <p *ngIf="editando" class="text-gray-500 text-xs mb-4">
+        Creada por {{ editando.UsuarioCreacion || '-' }}{{ editando.FechaCreacion ? ' el ' + fechaHora(editando.FechaCreacion) : '' }}
+      </p>
+      <form [formGroup]="form" (ngSubmit)="guardar()" class="mt-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label for="liq-empleado" class="block text-sm font-medium text-gray-300 mb-2">Empleado <span class="text-red-500">*</span></label>
+            <select id="liq-empleado" formControlName="IdEmpleado" class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500 disabled:opacity-60" [class.border-red-500]="invalido('IdEmpleado')">
+              <option [ngValue]="null">Selecciona...</option>
+              <option *ngFor="let empleado of catalogos.empleados" [ngValue]="empleado.Id">{{ empleado.Texto }} ({{ empleado.NombreStatus }})</option>
+            </select>
+          </div>
+          <div>
+            <label for="liq-puesto" class="block text-sm font-medium text-gray-300 mb-2">Puesto <span class="text-red-500">*</span></label>
+            <select id="liq-puesto" formControlName="IdPuesto" class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500" [class.border-red-500]="invalido('IdPuesto')">
+              <option [ngValue]="null">Selecciona...</option>
+              <option *ngFor="let puesto of catalogos.puestos" [ngValue]="puesto.Id">{{ puesto.Texto }}</option>
+            </select>
+          </div>
+          <div>
+            <label for="liq-contratacion" class="block text-sm font-medium text-gray-300 mb-2">Fecha de contratación <span class="text-red-500">*</span></label>
+            <input id="liq-contratacion" type="date" formControlName="FechaContratacion" class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500" [class.border-red-500]="invalido('FechaContratacion')" />
+          </div>
+          <div>
+            <label for="liq-motivo" class="block text-sm font-medium text-gray-300 mb-2">Motivo de egreso <span class="text-red-500">*</span></label>
+            <select id="liq-motivo" formControlName="MotivoEgreso" class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500" [class.border-red-500]="invalido('MotivoEgreso')">
+              <option [ngValue]="null">Selecciona...</option>
+              <option *ngFor="let motivo of catalogos.motivos" [ngValue]="motivo.Nombre">{{ motivo.Nombre }}</option>
+            </select>
+          </div>
+          <div>
+            <label for="liq-egreso" class="block text-sm font-medium text-gray-300 mb-2">Fecha de egreso <span class="text-red-500">*</span></label>
+            <input id="liq-egreso" type="date" formControlName="FechaEgreso" class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500" [class.border-red-500]="invalido('FechaEgreso')" />
+          </div>
+          <div>
+            <label for="liq-liquidacion" class="block text-sm font-medium text-gray-300 mb-2">Fecha de liquidación <span class="text-red-500">*</span></label>
+            <input id="liq-liquidacion" type="date" formControlName="FechaLiquidacion" class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500" [class.border-red-500]="invalido('FechaLiquidacion')" />
+          </div>
+          <div>
+            <label for="liq-sueldo" class="block text-sm font-medium text-gray-300 mb-2">Sueldo base (Q) <span class="text-red-500">*</span></label>
+            <input id="liq-sueldo" type="number" step="0.01" min="0" formControlName="IngresoSueldoBase" class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500" [class.border-red-500]="invalido('IngresoSueldoBase')" />
+          </div>
+          <div>
+            <label for="liq-bonificacion" class="block text-sm font-medium text-gray-300 mb-2">Bonificación Decreto 78-89 (Q)</label>
+            <input id="liq-bonificacion" type="number" step="0.01" min="0" formControlName="IngresoBonificacionDecreto" class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500" [class.border-red-500]="invalido('IngresoBonificacionDecreto')" />
+          </div>
+          <div>
+            <label for="liq-otros" class="block text-sm font-medium text-gray-300 mb-2">Otros ingresos (Q)</label>
+            <input id="liq-otros" type="number" step="0.01" min="0" formControlName="IngresoOtrosIngresos" class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500" [class.border-red-500]="invalido('IngresoOtrosIngresos')" />
+          </div>
+          <div>
+            <label for="liq-igss" class="block text-sm font-medium text-gray-300 mb-2">Descuento IGSS (Q)</label>
+            <input id="liq-igss" type="number" step="0.01" min="0" formControlName="DescuentoIgss" class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500" [class.border-red-500]="invalido('DescuentoIgss')" />
+          </div>
+          <div>
+            <label for="liq-isr" class="block text-sm font-medium text-gray-300 mb-2">Descuento ISR (Q)</label>
+            <input id="liq-isr" type="number" step="0.01" min="0" formControlName="DescuentoIsr" class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500" [class.border-red-500]="invalido('DescuentoIsr')" />
+          </div>
+          <div>
+            <label for="liq-inasistencias" class="block text-sm font-medium text-gray-300 mb-2">Descuento por inasistencias (Q)</label>
+            <input id="liq-inasistencias" type="number" step="0.01" min="0" formControlName="DescuentoInasistencias" class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500" [class.border-red-500]="invalido('DescuentoInasistencias')" />
+          </div>
+        </div>
+        <p *ngIf="form.touched && form.invalid" class="text-red-400 text-xs mt-3">Completa los campos obligatorios para continuar.</p>
+        <div class="flex gap-3 pt-6">
+          <button type="submit" [disabled]="isSubmitting" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white rounded-lg font-medium transition">
+            {{ isSubmitting ? 'Guardando...' : 'Guardar liquidación' }}
+          </button>
+          <button type="button" (click)="cerrarFormulario()" class="px-6 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition">Cancelar</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="bg-gray-800 border border-gray-700 rounded-lg p-6 h-fit">
+      <h3 class="text-lg font-bold text-white mb-3">Resumen de la liquidación</h3>
+      <p *ngIf="errorCalculo" class="text-red-400 text-sm">{{ errorCalculo }}</p>
+      <p *ngIf="!calculo && !errorCalculo" class="text-gray-400 text-sm">Completa los datos para ver el cálculo de la liquidación.</p>
+      <dl *ngIf="calculo" class="text-sm space-y-2">
+        <div class="flex justify-between"><dt class="text-gray-400">Sueldo base</dt><dd class="text-gray-200">{{ moneda(form.getRawValue().IngresoSueldoBase) }}</dd></div>
+        <div class="flex justify-between"><dt class="text-gray-400">Bonificación Decreto</dt><dd class="text-gray-200">{{ moneda(form.getRawValue().IngresoBonificacionDecreto) }}</dd></div>
+        <div class="flex justify-between"><dt class="text-gray-400">Otros ingresos</dt><dd class="text-gray-200">{{ moneda(form.getRawValue().IngresoOtrosIngresos) }}</dd></div>
+        <div class="flex justify-between"><dt class="text-gray-400">Indemnización</dt><dd class="text-gray-200">{{ moneda(calculo.IngresoIndemnizacion) }}</dd></div>
+        <div class="flex justify-between"><dt class="text-gray-400">Aguinaldo proporcional</dt><dd class="text-gray-200">{{ moneda(calculo.IngresoAguinaldo) }}</dd></div>
+        <div class="flex justify-between"><dt class="text-gray-400">Bono 14 proporcional</dt><dd class="text-gray-200">{{ moneda(calculo.IngresoBono14) }}</dd></div>
+        <div class="flex justify-between"><dt class="text-gray-400">Vacaciones proporcionales</dt><dd class="text-gray-200">{{ moneda(calculo.IngresoVacaciones) }}</dd></div>
+        <div class="flex justify-between border-t border-gray-700 pt-2 font-semibold"><dt class="text-white">Total de ingresos</dt><dd class="text-white">{{ moneda(calculo.TotalIngresos) }}</dd></div>
+        <div class="flex justify-between font-semibold"><dt class="text-white">Total de descuentos</dt><dd class="text-white">{{ moneda(calculo.TotalDescuentos) }}</dd></div>
+        <div class="flex justify-between"><dt class="text-gray-400">Salario neto del último periodo</dt><dd class="text-gray-200">{{ moneda(calculo.SalarioNeto) }}</dd></div>
+        <div class="flex justify-between border-t border-gray-700 pt-2 text-base font-bold"><dt class="text-green-400">Total neto</dt><dd class="text-green-400">{{ moneda(calculo.TotalNeto) }}</dd></div>
+        <p class="text-gray-500 text-xs pt-2">
+          Tiempo laborado: {{ calculo.DiasServicio }} días. Aguinaldo: {{ calculo.DiasAguinaldo }} días. Bono 14: {{ calculo.DiasBono14 }} días. Vacaciones: {{ calculo.DiasVacaciones }} días hábiles.
+        </p>
+      </dl>
+    </div>
+  </div>
+
+  <div class="bg-gray-800 border border-gray-700 rounded-lg">
+    <div *ngIf="isLoading" class="flex justify-center py-8"><div class="text-gray-400">Cargando...</div></div>
+
+    <div *ngIf="!isLoading && liquidaciones.length > 0" class="overflow-x-auto">
+      <table class="min-w-full text-sm">
+        <thead>
+          <tr class="bg-gray-900 text-gray-300 text-left">
+            <th class="px-4 py-3 font-semibold whitespace-nowrap">No.</th>
+            <th class="px-4 py-3 font-semibold whitespace-nowrap">Empleado</th>
+            <th class="px-4 py-3 font-semibold whitespace-nowrap">Puesto</th>
+            <th class="px-4 py-3 font-semibold whitespace-nowrap">Contratación</th>
+            <th class="px-4 py-3 font-semibold whitespace-nowrap">Egreso</th>
+            <th class="px-4 py-3 font-semibold whitespace-nowrap">Liquidación</th>
+            <th class="px-4 py-3 font-semibold whitespace-nowrap">Motivo</th>
+            <th class="px-4 py-3 font-semibold whitespace-nowrap text-right">Total ingresos</th>
+            <th class="px-4 py-3 font-semibold whitespace-nowrap text-right">Total descuentos</th>
+            <th class="px-4 py-3 font-semibold whitespace-nowrap text-right">Total neto</th>
+            <th class="px-4 py-3 font-semibold text-right">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let liquidacion of liquidaciones" class="border-t border-gray-700 hover:bg-gray-700/40 transition">
+            <td class="px-4 py-3 text-gray-200 whitespace-nowrap">{{ liquidacion.IdLiquidacion }}</td>
+            <td class="px-4 py-3 text-gray-200 whitespace-nowrap">{{ liquidacion.NombreEmpleado }}</td>
+            <td class="px-4 py-3 text-gray-200 whitespace-nowrap">{{ liquidacion.NombrePuesto }}</td>
+            <td class="px-4 py-3 text-gray-200 whitespace-nowrap">{{ fecha(liquidacion.FechaContratacion) }}</td>
+            <td class="px-4 py-3 text-gray-200 whitespace-nowrap">{{ fecha(liquidacion.FechaEgreso) }}</td>
+            <td class="px-4 py-3 text-gray-200 whitespace-nowrap">{{ fecha(liquidacion.FechaLiquidacion) }}</td>
+            <td class="px-4 py-3 text-gray-200 whitespace-nowrap">{{ liquidacion.MotivoEgreso }}</td>
+            <td class="px-4 py-3 text-gray-200 whitespace-nowrap text-right">{{ moneda(liquidacion.TotalIngresos) }}</td>
+            <td class="px-4 py-3 text-gray-200 whitespace-nowrap text-right">{{ moneda(liquidacion.TotalDescuentos) }}</td>
+            <td class="px-4 py-3 text-green-300 whitespace-nowrap text-right font-semibold">{{ moneda(liquidacion.TotalNeto) }}</td>
+            <td class="px-4 py-3 text-right whitespace-nowrap">
+              <button *ngIf="permisosService.puedeEditar(opcion)" (click)="abrirFormulario(liquidacion)" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition mr-2">Editar</button>
+              <button *ngIf="permisosService.puedeImprimir(opcion)" (click)="imprimirDocumento(liquidacion)" [disabled]="exportando" class="px-3 py-1 bg-gray-600 hover:bg-gray-500 disabled:opacity-50 text-white text-sm rounded transition mr-2">PDF</button>
+              <button *ngIf="permisosService.puedeExportar(opcion)" (click)="exportarDocumento(liquidacion)" [disabled]="exportando" class="px-3 py-1 bg-emerald-700 hover:bg-emerald-600 disabled:opacity-50 text-white text-sm rounded transition">Excel</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div *ngIf="!isLoading && liquidaciones.length === 0" class="text-center py-12">
+      <p class="text-gray-400 text-lg">No hay liquidaciones registradas.</p>
+    </div>
+  </div>
+</div>

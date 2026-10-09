@@ -9,6 +9,7 @@ interface NavItem {
   icon: string;
   route?: string;
   badge?: number;
+  grupo?: string;
   children?: NavItem[];
 }
 
@@ -26,7 +27,23 @@ const RUTAS_CONOCIDAS: { [nombreOpcion: string]: string } = {
   'Menus': '/dashboard/menus',
   'Opciones': '/dashboard/opciones',
   'Usuarios': '/dashboard/usuarios',
-  'Asignar Opciones a un Role': '/dashboard/asignacion-opciones'
+  'Asignar Opciones a un Role': '/dashboard/asignacion-opciones',
+  'Estados Civiles': '/dashboard/estados-civiles',
+  'Status Empleado': '/dashboard/status-empleado',
+  'Flujos Status Empleado': '/dashboard/flujos-status-empleado',
+  'Tipos de Documentos': '/dashboard/tipos-documento',
+  'Departamentos': '/dashboard/departamentos',
+  'Puestos': '/dashboard/puestos',
+  'Personas': '/dashboard/personas',
+  'Documentos de Personas': '/dashboard/documentos-persona',
+  'Bancos': '/dashboard/bancos',
+  'Empleados': '/dashboard/empleados',
+  'Cuentas Bancarias Empleados': '/dashboard/cuentas-bancarias',
+  'Inasistencias de Empleados': '/dashboard/inasistencias',
+  'Calcular Planilla': '/dashboard/calcular-planilla',
+  'Reporte de Planilla': '/dashboard/reporte-planilla',
+  'Boletas de Pago': '/dashboard/boletas-pago',
+  'Liquidacion de Empleado': '/dashboard/liquidacion'
 };
 
 @Component({
@@ -73,6 +90,7 @@ export class SidebarComponent implements OnInit {
         children.push({
           label: opcion.nombre,
           icon: '',
+          grupo: menu.nombre,
           route: this.resolverRuta(opcion.idOpcion, opcion.nombre)
         });
       }
@@ -98,6 +116,10 @@ export class SidebarComponent implements OnInit {
 
   isMenuExpanded(label: string): boolean {
     return this.expandedMenus.has(label);
+  }
+
+  mostrarGrupo(hijos: NavItem[], indice: number): boolean {
+    return indice === 0 || hijos[indice].grupo !== hijos[indice - 1].grupo;
   }
 
   onItemClick(): void {
