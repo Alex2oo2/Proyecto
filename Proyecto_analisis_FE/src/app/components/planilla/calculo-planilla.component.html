@@ -1,0 +1,82 @@
+<div class="space-y-6">
+  <div>
+    <h2 class="text-2xl font-bold text-white">Calcular Planilla</h2>
+    <p class="text-gray-400 mt-1">Ejecuta el cálculo de la planilla correspondiente a un periodo</p>
+  </div>
+
+  <div *ngIf="success" class="bg-green-900 border border-green-700 text-green-200 px-4 py-3 rounded-lg">{{ success }}</div>
+  <div *ngIf="error" class="bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded-lg">{{ error }}</div>
+
+  <div class="bg-gray-800 border border-gray-700 rounded-lg p-6 space-y-4">
+    <div>
+      <label for="periodo" class="block text-sm font-medium text-gray-300 mb-2">Periodo de planilla <span class="text-red-500">*</span></label>
+      <select id="periodo" [(ngModel)]="periodoSeleccionado" (ngModelChange)="seleccionarPeriodo()" [disabled]="isLoading || isProcessing"
+        class="w-full md:w-96 px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500">
+        <option value="">Selecciona un periodo...</option>
+        <option *ngFor="let item of periodos; trackBy: seguirPeriodo" [value]="claveDe(item)">{{ etiqueta(item) }}</option>
+      </select>
+    </div>
+
+    <div *ngIf="periodo as p" class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+      <div class="bg-gray-900 rounded-lg p-4">
+        <p class="text-gray-400">Fechas del periodo</p>
+        <p class="text-white font-semibold">{{ fecha(p.FechaInicio) }} al {{ fecha(p.FechaFin) }}</p>
+      </div>
+      <div class="bg-gray-900 rounded-lg p-4">
+        <p class="text-gray-400">Estado</p>
+        <p class="font-semibold" [class.text-green-400]="p.Calculada" [class.text-yellow-400]="!p.Calculada">
+          {{ p.Calculada ? 'Calculada el ' + fechaHora(p.FechaHoraProcesada) : 'Pendiente de cálculo' }}
+        </p>
+      </div>
+      <div class="bg-gray-900 rounded-lg p-4" *ngIf="p.Calculada">
+        <p class="text-gray-400">Salario neto calculado</p>
+        <p class="text-white font-semibold">{{ moneda(p.SalarioNeto) }}</p>
+      </div>
+    </div>
+
+    <div class="pt-2">
+      <button (click)="calcular()"
+        [disabled]="!periodo || isProcessing || (periodo.Calculada ? !permisosService.puedeEditar(opcion) : !permisosService.puedeCrear(opcion))"
+        class="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg font-medium transition">
+        {{ isProcessing ? 'Procesando...' : (periodo?.Calculada ? 'Recalcular planilla' : 'Calcular planilla') }}
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="resultado" class="space-y-4">
+    <h3 class="text-xl font-bold text-white">Resultado del cálculo</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div class="bg-gray-800 border border-gray-700 rounded-lg p-4">
+        <p class="text-gray-400 text-sm">Empleados incluidos</p>
+        <p class="text-2xl font-bold text-white">{{ resultado.TotalEmpleados }}</p>
+      </div>
+      <div class="bg-gray-800 border border-gray-700 rounded-lg p-4">
+        <p class="text-gray-400 text-sm">Total de ingresos</p>
+        <p class="text-2xl font-bold text-white">{{ moneda(resultado.TotalIngresos) }}</p>
+      </div>
+      <div class="bg-gray-800 border border-gray-700 rounded-lg p-4">
+        <p class="text-gray-400 text-sm">Total de descuentos</p>
+        <p class="text-2xl font-bold text-white">{{ moneda(resultado.TotalDescuentos) }}</p>
+      </div>
+      <div class="bg-gray-800 border border-gray-700 rounded-lg p-4">
+        <p class="text-gray-400 text-sm">Salario neto</p>
+        <p class="text-2xl font-bold text-green-400">{{ moneda(resultado.SalarioNeto) }}</p>
+      </div>
+    </div>
+    <p class="text-gray-400 text-sm">
+      Procesada el {{ fechaHora(resultado.FechaHoraProcesada) }}.
+      <a routerLink="/dashboard/reporte-planilla" class="text-blue-400 hover:text-blue-300 underline">Ver el reporte de planilla</a>
+    </p>
+  </div>
+
+  <div class="bg-gray-800 border border-gray-700 rounded-lg p-6">
+    <h3 class="text-lg font-semibold text-white mb-3">Reglas aplicadas en el cálculo</h3>
+    <ul class="list-disc list-inside space-y-1 text-sm text-gray-400">
+      <li>Se incluyen los empleados con status Activo contratados a más tardar al final del periodo; quienes ingresan durante el periodo se pagan proporcionalmente.</li>
+      <li>Los ingresos y los descuentos de IGSS (cuota laboral 4.83%) e ISR (tarifa de 5% y 7%) se toman de la información registrada en cada empleado.</li>
+      <li>La bonificación incentivo (Decreto 78-89) se toma del empleado y no está afecta a IGSS ni a ISR.</li>
+      <li>Las inasistencias pendientes de procesar se descuentan por día sobre la base de 30 días (sueldo base más bonificación) y quedan marcadas con su fecha de procesamiento.</li>
+      <li>El resultado se guarda en la cabecera y el detalle de la planilla; los reportes y boletas leen estos datos sin recalcular.</li>
+    </ul>
+  </div>
+</div>

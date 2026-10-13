@@ -1,0 +1,88 @@
+<div class="space-y-6">
+  <div class="flex flex-wrap justify-between items-center gap-4">
+    <div>
+      <h2 class="text-2xl font-bold text-white">Reporte de Planilla</h2>
+      <p class="text-gray-400 mt-1">Consulta la planilla procesada de un periodo</p>
+    </div>
+    <div class="flex flex-wrap gap-2" *ngIf="reporte">
+      <button *ngIf="permisosService.puedeImprimir(opcion)" (click)="imprimir()" [disabled]="exportando" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 disabled:opacity-50 text-white rounded-lg font-medium transition">
+        Imprimir (PDF)
+      </button>
+      <button *ngIf="permisosService.puedeExportar(opcion)" (click)="exportar()" [disabled]="exportando" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-600 disabled:opacity-50 text-white rounded-lg font-medium transition">
+        Exportar (Excel)
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="error" class="bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded-lg">{{ error }}</div>
+
+  <div class="bg-gray-800 border border-gray-700 rounded-lg p-6">
+    <label for="periodo" class="block text-sm font-medium text-gray-300 mb-2">Periodo de planilla <span class="text-red-500">*</span></label>
+    <select id="periodo" [(ngModel)]="periodoSeleccionado" (ngModelChange)="consultar()" [disabled]="isLoading"
+      class="w-full md:w-96 px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500">
+      <option value="">Selecciona un periodo...</option>
+      <option *ngFor="let item of periodos" [value]="claveDe(item)">{{ etiqueta(item) }}</option>
+    </select>
+    <p *ngIf="!isLoading && periodos.length === 0" class="text-gray-400 text-sm mt-3">Todavía no hay planillas calculadas. Calcula una planilla para poder consultarla.</p>
+  </div>
+
+  <div *ngIf="isLoadingReporte" class="flex justify-center py-8"><div class="text-gray-400">Cargando reporte...</div></div>
+
+  <div *ngIf="reporte" class="space-y-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div class="bg-gray-800 border border-gray-700 rounded-lg p-4">
+        <p class="text-gray-400 text-sm">Periodo</p>
+        <p class="text-lg font-bold text-white">{{ fecha(reporte.Cabecera.FechaInicio) }} al {{ fecha(reporte.Cabecera.FechaFin) }}</p>
+        <p class="text-gray-500 text-xs mt-1">Procesada el {{ fechaHora(reporte.Cabecera.FechaHoraProcesada) }}</p>
+      </div>
+      <div class="bg-gray-800 border border-gray-700 rounded-lg p-4">
+        <p class="text-gray-400 text-sm">Total de ingresos</p>
+        <p class="text-2xl font-bold text-white">{{ moneda(reporte.Cabecera.TotalIngresos) }}</p>
+      </div>
+      <div class="bg-gray-800 border border-gray-700 rounded-lg p-4">
+        <p class="text-gray-400 text-sm">Total de descuentos</p>
+        <p class="text-2xl font-bold text-white">{{ moneda(reporte.Cabecera.TotalDescuentos) }}</p>
+      </div>
+      <div class="bg-gray-800 border border-gray-700 rounded-lg p-4">
+        <p class="text-gray-400 text-sm">Salario neto</p>
+        <p class="text-2xl font-bold text-green-400">{{ moneda(reporte.Cabecera.SalarioNeto) }}</p>
+      </div>
+    </div>
+
+    <div class="bg-gray-800 border border-gray-700 rounded-lg overflow-x-auto">
+      <table class="min-w-full text-sm">
+        <thead>
+          <tr class="bg-gray-900 text-gray-300 text-left">
+            <th class="px-4 py-3 font-semibold whitespace-nowrap">Empleado</th>
+            <th class="px-4 py-3 font-semibold whitespace-nowrap">Contratación</th>
+            <th class="px-4 py-3 font-semibold whitespace-nowrap">Puesto</th>
+            <th class="px-4 py-3 font-semibold whitespace-nowrap">Status</th>
+            <th class="px-4 py-3 font-semibold whitespace-nowrap text-right">Sueldo base</th>
+            <th class="px-4 py-3 font-semibold whitespace-nowrap text-right">Bonificación</th>
+            <th class="px-4 py-3 font-semibold whitespace-nowrap text-right">Otros ingresos</th>
+            <th class="px-4 py-3 font-semibold whitespace-nowrap text-right">IGSS</th>
+            <th class="px-4 py-3 font-semibold whitespace-nowrap text-right">ISR</th>
+            <th class="px-4 py-3 font-semibold whitespace-nowrap text-right">Inasistencias</th>
+            <th class="px-4 py-3 font-semibold whitespace-nowrap text-right">Salario neto</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let fila of reporte.Detalle" class="border-t border-gray-700 hover:bg-gray-700/40 transition">
+            <td class="px-4 py-3 text-gray-200 whitespace-nowrap">{{ fila.NombreEmpleado }}</td>
+            <td class="px-4 py-3 text-gray-200 whitespace-nowrap">{{ fecha(fila.FechaContratacion) }}</td>
+            <td class="px-4 py-3 text-gray-200 whitespace-nowrap">{{ fila.NombrePuesto }}</td>
+            <td class="px-4 py-3 text-gray-200 whitespace-nowrap">{{ fila.NombreStatus }}</td>
+            <td class="px-4 py-3 text-gray-200 whitespace-nowrap text-right">{{ moneda(fila.IngresoSueldoBase) }}</td>
+            <td class="px-4 py-3 text-gray-200 whitespace-nowrap text-right">{{ moneda(fila.IngresoBonificacionDecreto) }}</td>
+            <td class="px-4 py-3 text-gray-200 whitespace-nowrap text-right">{{ moneda(fila.IngresoOtrosIngresos) }}</td>
+            <td class="px-4 py-3 text-gray-200 whitespace-nowrap text-right">{{ moneda(fila.DescuentoIgss) }}</td>
+            <td class="px-4 py-3 text-gray-200 whitespace-nowrap text-right">{{ moneda(fila.DescuentoIsr) }}</td>
+            <td class="px-4 py-3 text-gray-200 whitespace-nowrap text-right">{{ moneda(fila.DescuentoInasistencias) }}</td>
+            <td class="px-4 py-3 text-green-300 whitespace-nowrap text-right font-semibold">{{ moneda(fila.SalarioNeto) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="text-gray-500 text-sm">{{ reporte.Cabecera.TotalEmpleados }} empleados incluidos en la planilla.</p>
+  </div>
+</div>

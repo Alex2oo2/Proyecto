@@ -1,0 +1,118 @@
+<div class="space-y-6">
+  <div class="flex flex-wrap justify-between items-center gap-4">
+    <div>
+      <h2 class="text-2xl font-bold text-white">{{ config.titulo }}</h2>
+      <p class="text-gray-400 mt-1">{{ config.descripcion }}</p>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <button *ngIf="permisosService.puedeImprimir(config.opcion)" (click)="imprimir()" [disabled]="exportando" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 disabled:opacity-50 text-white rounded-lg font-medium transition">
+        Imprimir (PDF)
+      </button>
+      <button *ngIf="permisosService.puedeExportar(config.opcion)" (click)="exportar()" [disabled]="exportando" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-600 disabled:opacity-50 text-white rounded-lg font-medium transition">
+        Exportar (Excel)
+      </button>
+      <button *ngIf="!mostrarFormulario && permisosService.puedeCrear(config.opcion)" (click)="abrirFormulario()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition">
+        + Nuevo registro
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="success" class="bg-green-900 border border-green-700 text-green-200 px-4 py-3 rounded-lg">{{ success }}</div>
+  <div *ngIf="error" class="bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded-lg">{{ error }}</div>
+
+  <div *ngIf="mostrarFormulario" class="bg-gray-800 border border-gray-700 rounded-lg p-6">
+    <h3 class="text-xl font-bold text-white mb-1">{{ editando ? 'Editar' : 'Registrar' }} {{ config.singular }}</h3>
+    <p *ngIf="editando" class="text-gray-500 text-xs mb-4">{{ auditoria }}</p>
+    <form [formGroup]="form" (ngSubmit)="guardar()" class="mt-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div *ngFor="let campo of config.campos">
+          <ng-container [ngSwitch]="campo.tipo">
+            <label *ngSwitchCase="'booleano'" class="flex items-center gap-3 mt-7 text-gray-300 cursor-pointer">
+              <input type="checkbox" [formControlName]="campo.nombre" class="w-4 h-4 accent-blue-600" />
+              <span class="text-sm font-medium">{{ campo.etiqueta }}</span>
+            </label>
+
+            <ng-container *ngSwitchDefault>
+              <label [for]="'campo-' + campo.nombre" class="block text-sm font-medium text-gray-300 mb-2">
+                {{ campo.etiqueta }} <span *ngIf="campo.requerido" class="text-red-500">*</span>
+              </label>
+
+              <select *ngIf="campo.tipo === 'select'" [id]="'campo-' + campo.nombre" [formControlName]="campo.nombre"
+                class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500 disabled:opacity-60"
+                [class.border-red-500]="invalido(campo)">
+                <option [ngValue]="null">Selecciona...</option>
+                <option *ngFor="let opcion of opcionesDe(campo)" [ngValue]="opcion.Id">{{ opcion.Texto }}</option>
+              </select>
+
+              <input *ngIf="campo.tipo !== 'select'" [id]="'campo-' + campo.nombre" [formControlName]="campo.nombre"
+                [type]="campo.tipo === 'fecha' ? 'date' : campo.tipo === 'correo' ? 'email' : campo.tipo === 'numero' || campo.tipo === 'moneda' ? 'number' : 'text'"
+                [attr.step]="campo.tipo === 'moneda' ? '0.01' : campo.tipo === 'numero' ? '1' : null"
+                [attr.min]="campo.tipo === 'moneda' || campo.tipo === 'numero' ? '0' : null"
+                [attr.maxlength]="campo.longitudMaxima || null"
+                class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 disabled:opacity-60"
+                [class.border-red-500]="invalido(campo)" />
+
+              <p *ngIf="invalido(campo)" class="text-red-400 text-xs mt-1">
+                {{ campo.tipo === 'correo' && form.get(campo.nombre)?.errors?.['email'] ? 'El correo electrónico no es válido.' : 'Este campo es obligatorio o no es válido.' }}
+              </p>
+              <p *ngIf="campo.ayuda" class="text-gray-500 text-xs mt-1">{{ campo.ayuda }}</p>
+            </ng-container>
+          </ng-container>
+        </div>
+      </div>
+      <div class="flex gap-3 pt-6">
+        <button type="submit" [disabled]="isSubmitting" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white rounded-lg font-medium transition">
+          {{ isSubmitting ? 'Guardando...' : 'Guardar' }}
+        </button>
+        <button type="button" (click)="cerrarFormulario()" class="px-6 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition">Cancelar</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="bg-gray-800 border border-gray-700 rounded-lg">
+    <div class="flex flex-wrap items-center justify-between gap-3 p-4 border-b border-gray-700">
+      <input type="search" [(ngModel)]="busqueda" (ngModelChange)="reiniciarPagina()" placeholder="Buscar..." class="w-full sm:w-72 px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500" />
+      <div class="flex items-center gap-2 text-sm text-gray-400">
+        <span>Filas</span>
+        <select [(ngModel)]="tamanoPagina" (ngModelChange)="reiniciarPagina()" class="px-2 py-1 bg-gray-700 border border-gray-600 rounded text-white">
+          <option *ngFor="let tamano of tamanosPagina" [ngValue]="tamano">{{ tamano }}</option>
+        </select>
+      </div>
+    </div>
+
+    <div *ngIf="isLoading" class="flex justify-center py-8"><div class="text-gray-400">Cargando...</div></div>
+
+    <div *ngIf="!isLoading && registrosFiltrados.length > 0" class="overflow-x-auto">
+      <table class="min-w-full text-sm">
+        <thead>
+          <tr class="bg-gray-900 text-gray-300 text-left">
+            <th *ngFor="let columna of config.columnas" class="px-4 py-3 font-semibold whitespace-nowrap" [class.text-right]="esNumerica(columna)">{{ columna.titulo }}</th>
+            <th *ngIf="permisosService.puedeEditar(config.opcion) || permisosService.puedeEliminar(config.opcion)" class="px-4 py-3 font-semibold text-right">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let registro of registrosPagina" class="border-t border-gray-700 hover:bg-gray-700/40 transition">
+            <td *ngFor="let columna of config.columnas" class="px-4 py-3 text-gray-200 whitespace-nowrap" [class.text-right]="esNumerica(columna)">{{ valorCelda(registro, columna) }}</td>
+            <td *ngIf="permisosService.puedeEditar(config.opcion) || permisosService.puedeEliminar(config.opcion)" class="px-4 py-3 text-right whitespace-nowrap">
+              <button *ngIf="permisosService.puedeEditar(config.opcion) && modificable(registro)" (click)="abrirFormulario(registro)" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition mr-2">Editar</button>
+              <button *ngIf="permisosService.puedeEliminar(config.opcion) && modificable(registro)" (click)="eliminar(registro)" class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-sm rounded transition">Eliminar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div *ngIf="!isLoading && registrosFiltrados.length === 0" class="text-center py-12">
+      <p class="text-gray-400 text-lg">{{ registros.length === 0 ? 'No hay registros. Crea uno para empezar.' : 'No se encontraron registros con ese criterio.' }}</p>
+    </div>
+
+    <div *ngIf="!isLoading && registrosFiltrados.length > 0" class="flex flex-wrap items-center justify-between gap-3 p-4 border-t border-gray-700 text-sm text-gray-400">
+      <span>{{ rangoVisible }}</span>
+      <div class="flex items-center gap-2">
+        <button (click)="cambiarPagina(-1)" [disabled]="pagina <= 1" class="px-3 py-1 bg-gray-700 hover:bg-gray-600 disabled:opacity-40 text-white rounded transition">Anterior</button>
+        <span>Página {{ pagina }} de {{ totalPaginas }}</span>
+        <button (click)="cambiarPagina(1)" [disabled]="pagina >= totalPaginas" class="px-3 py-1 bg-gray-700 hover:bg-gray-600 disabled:opacity-40 text-white rounded transition">Siguiente</button>
+      </div>
+    </div>
+  </div>
+</div>

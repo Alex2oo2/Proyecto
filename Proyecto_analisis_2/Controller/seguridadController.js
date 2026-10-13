@@ -173,16 +173,43 @@ async function obtenerMisPermisos(req, res) {
     // para que sea más simple de consultar en el frontend.
     const mapa = {};
     permisos.forEach(p => {
+      const alta = !!p.Alta, baja = !!p.Baja, cambio = !!p.Cambio, imprimir = !!p.Imprimir, exportar = !!p.Exportar;
       mapa[p.NombreOpcion] = {
-        Alta: !!p.Alta,
-        Baja: !!p.Baja,
-        Cambio: !!p.Cambio,
-        Imprimir: !!p.Imprimir,
-        Exportar: !!p.Exportar
+        // "Consultar" no existe como columna en ROLE_OPCION: se deriva como
+        // "tiene algún otro permiso sobre esta opción" (sin tocar el esquema de BD).
+        Consultar: alta || baja || cambio || imprimir || exportar,
+        Alta: alta,
+        Baja: baja,
+        Cambio: cambio,
+        Imprimir: imprimir,
+        Exportar: exportar
       };
     });
 
     res.json(mapa);
+  } catch (error) { res.status(500).json({ error: error.message }); }
+}
+
+// Árbol de navegación (Modulo -> Menu -> Opcion) ya filtrado por lo que el
+// usuario autenticado puede "Consultar". Usado por el sidebar dinámico.
+async function obtenerArbolMenu(req, res) {
+  try {
+    const idRole = req.usuario.IdRole;
+    const arbol = await roleOpcionModel.obtenerArbolMenu(idRole);
+    res.json(arbol);
+  } catch (error) { res.status(500).json({ error: error.message }); }
+}
+
+// Nombre de una sola OPCION por su Id. Se usa desde la pantalla genérica
+// "en construcción" del sidebar dinámico, cuando aún no existe un componente
+// real para esa opción. No requiere permiso de administración: cualquier
+// usuario autenticado puede pedir el nombre de una opción a la que su rol
+// ya le dio acceso (viene del árbol de menú que él mismo puede ver).
+async function obtenerNombreOpcion(req, res) {
+  try {
+    const opcion = await opcionModel.obtenerPorId(req.params.id);
+    if (!opcion) return res.status(404).json({ mensaje: 'Opción no encontrada' });
+    res.json({ IdOpcion: opcion.IdOpcion, Nombre: opcion.Nombre });
   } catch (error) { res.status(500).json({ error: error.message }); }
 }
 
@@ -191,5 +218,6 @@ module.exports = {
   obtenerMenus, crearMenu, actualizarMenu, eliminarMenu,
   obtenerOpciones, crearOpcion, actualizarOpcion, eliminarOpcion,
   obtenerRoles, crearRole, actualizarRole, eliminarRole,
-  obtenerMatrizPermisos, guardarMatrizPermisos, obtenerMisPermisos
+  obtenerMatrizPermisos, guardarMatrizPermisos, obtenerMisPermisos, obtenerArbolMenu,
+  obtenerNombreOpcion
 };

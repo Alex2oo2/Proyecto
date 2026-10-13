@@ -1,0 +1,89 @@
+<div class="space-y-6">
+  <div class="flex flex-wrap justify-between items-center gap-4">
+    <div>
+      <h2 class="text-2xl font-bold text-white">Boletas de Pago</h2>
+      <p class="text-gray-400 mt-1">Genera la boleta de pago de un empleado incluido en una planilla procesada</p>
+    </div>
+    <div class="flex flex-wrap gap-2" *ngIf="boleta">
+      <button *ngIf="permisosService.puedeImprimir(opcion)" (click)="imprimir()" [disabled]="exportando" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 disabled:opacity-50 text-white rounded-lg font-medium transition">
+        Imprimir (PDF)
+      </button>
+      <button *ngIf="permisosService.puedeExportar(opcion)" (click)="exportar()" [disabled]="exportando" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-600 disabled:opacity-50 text-white rounded-lg font-medium transition">
+        Exportar (Excel)
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="error" class="bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded-lg">{{ error }}</div>
+
+  <div class="bg-gray-800 border border-gray-700 rounded-lg p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div>
+      <label for="periodo" class="block text-sm font-medium text-gray-300 mb-2">Periodo de planilla <span class="text-red-500">*</span></label>
+      <select id="periodo" [(ngModel)]="periodoSeleccionado" (ngModelChange)="seleccionarPeriodo()" [disabled]="isLoading"
+        class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500">
+        <option value="">Selecciona un periodo...</option>
+        <option *ngFor="let item of periodos" [value]="claveDe(item)">{{ etiqueta(item) }}</option>
+      </select>
+    </div>
+    <div>
+      <label for="empleado" class="block text-sm font-medium text-gray-300 mb-2">Empleado <span class="text-red-500">*</span></label>
+      <select id="empleado" [(ngModel)]="empleadoSeleccionado" (ngModelChange)="seleccionarEmpleado()" [disabled]="empleados.length === 0"
+        class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500 disabled:opacity-60">
+        <option [ngValue]="null">Selecciona un empleado...</option>
+        <option *ngFor="let empleado of empleados" [ngValue]="empleado.Id">{{ empleado.Texto }}</option>
+      </select>
+    </div>
+    <p *ngIf="!isLoading && periodos.length === 0" class="md:col-span-2 text-gray-400 text-sm">Todavía no hay planillas calculadas. Calcula una planilla para poder generar boletas.</p>
+  </div>
+
+  <div *ngIf="isLoadingBoleta" class="flex justify-center py-8"><div class="text-gray-400">Cargando boleta...</div></div>
+
+  <div *ngIf="boleta" class="bg-white text-slate-900 rounded-lg p-8 max-w-3xl space-y-6 shadow-lg">
+    <div class="border-b border-slate-300 pb-4">
+      <p class="text-xs font-semibold text-slate-500 uppercase">{{ boleta.Empresa.Nombre }}</p>
+      <h3 class="text-2xl font-bold text-blue-900">Boleta de Pago</h3>
+      <p class="text-sm text-slate-500">{{ boleta.Empresa.Direccion }}<span *ngIf="boleta.Empresa.Nit"> - NIT {{ boleta.Empresa.Nit }}</span></p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
+      <p><span class="text-slate-500 mr-1">Empleado:</span> <span class="font-semibold">{{ boleta.Detalle.NombreEmpleado }}</span></p>
+      <p><span class="text-slate-500 mr-1">Código:</span> <span class="font-semibold">{{ boleta.Detalle.IdEmpleado }}</span></p>
+      <p><span class="text-slate-500 mr-1">Puesto:</span> <span class="font-semibold">{{ boleta.Detalle.NombrePuesto }}</span></p>
+      <p><span class="text-slate-500 mr-1">Departamento:</span> <span class="font-semibold">{{ boleta.Detalle.NombreDepartamento }}</span></p>
+      <p><span class="text-slate-500 mr-1">Fecha de contratación:</span> <span class="font-semibold">{{ fecha(boleta.Detalle.FechaContratacion) }}</span></p>
+      <p><span class="text-slate-500 mr-1">Status:</span> <span class="font-semibold">{{ boleta.Detalle.NombreStatus }}</span></p>
+      <p><span class="text-slate-500 mr-1">Periodo de pago:</span> <span class="font-semibold">{{ boleta.Periodo.Descripcion }}</span></p>
+      <p><span class="text-slate-500 mr-1">Del - Al:</span> <span class="font-semibold">{{ fecha(boleta.Periodo.FechaInicio) }} - {{ fecha(boleta.Periodo.FechaFin) }}</span></p>
+      <p *ngFor="let documento of boleta.Documentos"><span class="text-slate-500 mr-1">{{ documento.TipoDocumento }}:</span> <span class="font-semibold">{{ documento.NoDocumento }}</span></p>
+      <ng-container *ngIf="boleta.CuentaBancaria as cuenta">
+        <p><span class="text-slate-500 mr-1">Banco:</span> <span class="font-semibold">{{ cuenta.NombreBanco }}</span></p>
+        <p><span class="text-slate-500 mr-1">Cuenta de depósito:</span> <span class="font-semibold">{{ cuenta.NumeroDeCuenta }}</span></p>
+      </ng-container>
+    </div>
+
+    <div>
+      <h4 class="bg-slate-200 text-blue-900 font-bold text-sm px-3 py-1.5 rounded">Ingresos</h4>
+      <dl class="text-sm divide-y divide-slate-200">
+        <div class="flex justify-between px-3 py-2"><dt>Sueldo base</dt><dd>{{ moneda(boleta.Detalle.IngresoSueldoBase) }}</dd></div>
+        <div class="flex justify-between px-3 py-2"><dt>Bonificación Decreto 78-89</dt><dd>{{ moneda(boleta.Detalle.IngresoBonificacionDecreto) }}</dd></div>
+        <div class="flex justify-between px-3 py-2"><dt>Otros ingresos</dt><dd>{{ moneda(boleta.Detalle.IngresoOtrosIngresos) }}</dd></div>
+        <div class="flex justify-between px-3 py-2 font-bold"><dt>Total de ingresos</dt><dd>{{ moneda(boleta.Detalle.TotalIngresos) }}</dd></div>
+      </dl>
+    </div>
+
+    <div>
+      <h4 class="bg-slate-200 text-blue-900 font-bold text-sm px-3 py-1.5 rounded">Descuentos</h4>
+      <dl class="text-sm divide-y divide-slate-200">
+        <div class="flex justify-between px-3 py-2"><dt>Cuota laboral IGSS (4.83%)</dt><dd>{{ moneda(boleta.Detalle.DescuentoIgss) }}</dd></div>
+        <div class="flex justify-between px-3 py-2"><dt>Impuesto Sobre la Renta (ISR)</dt><dd>{{ moneda(boleta.Detalle.DescuentoIsr) }}</dd></div>
+        <div class="flex justify-between px-3 py-2"><dt>Descuento por inasistencias</dt><dd>{{ moneda(boleta.Detalle.DescuentoInasistencias) }}</dd></div>
+        <div class="flex justify-between px-3 py-2 font-bold"><dt>Total de descuentos</dt><dd>{{ moneda(boleta.Detalle.TotalDescuentos) }}</dd></div>
+      </dl>
+    </div>
+
+    <div class="flex justify-between items-center bg-blue-900 text-white rounded px-4 py-3 text-lg font-bold">
+      <span>Salario neto</span>
+      <span>{{ moneda(boleta.Detalle.SalarioNeto) }}</span>
+    </div>
+  </div>
+</div>
