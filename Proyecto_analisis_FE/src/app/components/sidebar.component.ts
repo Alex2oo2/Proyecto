@@ -88,7 +88,7 @@ export class SidebarComponent implements OnInit {
     for (const menu of modulo.menus) {
       for (const opcion of menu.opciones) {
         children.push({
-          label: opcion.nombre,
+          label: this.etiquetaOpcion(opcion.nombre),
           icon: '',
           grupo: menu.nombre,
           route: this.resolverRuta(opcion.idOpcion, opcion.nombre)
@@ -96,6 +96,14 @@ export class SidebarComponent implements OnInit {
       }
     }
     return { label: modulo.nombre, icon: '', children };
+  }
+
+  private etiquetaOpcion(nombre: string): string {
+    const etiquetas: { [nombreOpcion: string]: string } = {
+      'Status Empleado': 'Estatus del empleado',
+      'Flujos Status Empleado': 'Flujos de estados del empleado'
+    };
+    return etiquetas[nombre] || nombre;
   }
 
   // Si ya existe una pantalla Angular real para esa opción, usa esa ruta.

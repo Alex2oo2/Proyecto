@@ -10,19 +10,19 @@ import { ConfigCrud } from './crud-config';
 })
 export class StatusEmpleadoComponent {
   config: ConfigCrud = {
-    titulo: 'Status de Empleado',
+    titulo: 'Estatus del empleado',
     descripcion: 'Administra los estados laborales que puede tener un empleado',
     recurso: 'status-empleados',
     opcion: 'Status Empleado',
-    singular: 'status de empleado',
+    singular: 'estatus del empleado',
     claves: ['IdStatusEmpleado'],
     campos: [
-      { nombre: 'Nombre', etiqueta: 'Nombre del status', tipo: 'texto', requerido: true, longitudMaxima: 50 }
+      { nombre: 'Nombre', etiqueta: 'Nombre del estatus', tipo: 'texto', requerido: true, longitudMaxima: 50 }
     ],
     columnas: [
       { campo: 'IdStatusEmpleado', titulo: 'Código', tipo: 'numero' },
       { campo: 'Nombre', titulo: 'Nombre' }
     ],
-    descripcionRegistro: (registro) => `el status "${registro.Nombre}"`
+    descripcionRegistro: (registro) => `el estatus "${registro.Nombre}"`
   };
 }
