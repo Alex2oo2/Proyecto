@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
@@ -13,9 +14,24 @@ export class AuthService {
   private tokenSubject = new BehaviorSubject<string | null>(this.getStoredToken());
   public token$ = this.tokenSubject.asObservable();
 
-  constructor(private http: HttpClient) {
+  constructor(
+    private http: HttpClient,
+    private router: Router
+  ) {
     this.initializeToken();
+    if (typeof window !== 'undefined') {
+      window.addEventListener('storage', this.handleStorageChange);
+    }
   }
+
+  private readonly handleStorageChange = (event: StorageEvent): void => {
+    if (event.key !== 'auth_token' || event.newValue === this.tokenSubject.value) {
+      return;
+    }
+
+    this.tokenSubject.next(null);
+    void this.router.navigateByUrl('/login');
+  };
 
   private getStoredToken(): string | null {
     if (typeof localStorage !== 'undefined') {
