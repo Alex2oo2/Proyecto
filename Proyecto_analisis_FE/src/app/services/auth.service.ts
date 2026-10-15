@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Router } from '@angular/router';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
@@ -15,27 +14,14 @@ export class AuthService {
   public token$ = this.tokenSubject.asObservable();
 
   constructor(
-    private http: HttpClient,
-    private router: Router
+    private http: HttpClient
   ) {
     this.initializeToken();
-    if (typeof window !== 'undefined') {
-      window.addEventListener('storage', this.handleStorageChange);
-    }
   }
 
-  private readonly handleStorageChange = (event: StorageEvent): void => {
-    if (event.key !== 'auth_token' || event.newValue === this.tokenSubject.value) {
-      return;
-    }
-
-    this.tokenSubject.next(null);
-    void this.router.navigateByUrl('/login');
-  };
-
   private getStoredToken(): string | null {
-    if (typeof localStorage !== 'undefined') {
-      return localStorage.getItem('auth_token');
+    if (typeof sessionStorage !== 'undefined') {
+      return sessionStorage.getItem('auth_token');
     }
     return null;
   }
@@ -54,9 +40,9 @@ export class AuthService {
     }).pipe(
       tap(response => {
         if (response.token) {
-          localStorage.setItem('auth_token', response.token);
-          localStorage.setItem('current_user', JSON.stringify(response.usuario));
-          localStorage.setItem('must_change_password', String(response.requiereCambiarPassword));
+          sessionStorage.setItem('auth_token', response.token);
+          sessionStorage.setItem('current_user', JSON.stringify(response.usuario));
+          sessionStorage.setItem('must_change_password', String(response.requiereCambiarPassword));
           this.tokenSubject.next(response.token);
         }
       }),
@@ -74,10 +60,10 @@ export class AuthService {
         headers: new HttpHeaders({ Authorization: `Bearer ${token}` })
       }).subscribe({ error: error => console.error('Logout error:', error) });
     }
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('current_user');
-    localStorage.removeItem('must_change_password');
-    localStorage.removeItem('permisos_usuario');
+    sessionStorage.removeItem('auth_token');
+    sessionStorage.removeItem('current_user');
+    sessionStorage.removeItem('must_change_password');
+    sessionStorage.removeItem('permisos_usuario');
     this.tokenSubject.next(null);
   }
 
@@ -86,8 +72,8 @@ export class AuthService {
   }
 
   getCurrentUser(): any {
-    if (typeof localStorage !== 'undefined') {
-      const user = localStorage.getItem('current_user');
+    if (typeof sessionStorage !== 'undefined') {
+      const user = sessionStorage.getItem('current_user');
       return user ? JSON.parse(user) : null;
     }
     return null;
@@ -98,10 +84,11 @@ export class AuthService {
   }
 
   mustChangePassword(): boolean {
-    return localStorage.getItem('must_change_password') === 'true';
+    return typeof sessionStorage !== 'undefined'
+      && sessionStorage.getItem('must_change_password') === 'true';
   }
 
   clearMustChangePassword(): void {
-    localStorage.removeItem('must_change_password');
+    sessionStorage.removeItem('must_change_password');
   }
 }

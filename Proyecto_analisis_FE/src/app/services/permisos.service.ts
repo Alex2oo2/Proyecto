@@ -20,8 +20,7 @@ const PERMISO_VACIO: PermisoOpcion = {
   Consultar: false, Alta: false, Baja: false, Cambio: false, Imprimir: false, Exportar: false
 };
 
-// Nombre de la clave usada para persistir los permisos en localStorage,
-// de forma que sobrevivan a un refresh de página (igual que auth_token).
+// Los permisos se mantienen por pestaña para que varias sesiones no se mezclen.
 const STORAGE_KEY = 'permisos_usuario';
 
 @Injectable({
@@ -38,8 +37,8 @@ export class PermisosService {
   ) { }
 
   private getPermisosGuardados(): MapaPermisos {
-    if (typeof localStorage !== 'undefined') {
-      const data = localStorage.getItem(STORAGE_KEY);
+    if (typeof sessionStorage !== 'undefined') {
+      const data = sessionStorage.getItem(STORAGE_KEY);
       return data ? JSON.parse(data) : {};
     }
     return {};
@@ -59,7 +58,7 @@ export class PermisosService {
       headers: this.getHeaders()
     }).pipe(
       tap(permisos => {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(permisos));
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(permisos));
         this.permisosSubject.next(permisos);
       }),
       catchError(error => {
@@ -70,7 +69,7 @@ export class PermisosService {
   }
 
   limpiarPermisos(): void {
-    localStorage.removeItem(STORAGE_KEY);
+    sessionStorage.removeItem(STORAGE_KEY);
     this.permisosSubject.next({});
   }
 
