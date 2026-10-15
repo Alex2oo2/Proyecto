@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
@@ -12,11 +13,25 @@ export class AuthService {
   private apiUrl = 'http://localhost:3000/auth';
   private tokenSubject = new BehaviorSubject<string | null>(this.getStoredToken());
   public token$ = this.tokenSubject.asObservable();
+  private logoutChannel: BroadcastChannel | null = null;
 
   constructor(
-    private http: HttpClient
+    private http: HttpClient,
+    private router: Router
   ) {
     this.initializeToken();
+    if (typeof BroadcastChannel !== 'undefined') {
+      this.logoutChannel = new BroadcastChannel('auth-logout');
+      this.logoutChannel.onmessage = (event: MessageEvent<{ userId: string }>) => {
+        const currentUser = this.getCurrentUser();
+        if (currentUser?.IdUsuario !== event.data?.userId) {
+          return;
+        }
+
+        this.clearLocalSession();
+        void this.router.navigateByUrl('/login');
+      };
+    }
   }
 
   private getStoredToken(): string | null {
@@ -55,11 +70,19 @@ export class AuthService {
 
   logout(): void {
     const token = this.getToken();
+    const userId = this.getCurrentUser()?.IdUsuario;
     if (token) {
       this.http.post(`${this.apiUrl}/logout`, {}, {
         headers: new HttpHeaders({ Authorization: `Bearer ${token}` })
       }).subscribe({ error: error => console.error('Logout error:', error) });
     }
+    if (userId) {
+      this.logoutChannel?.postMessage({ userId });
+    }
+    this.clearLocalSession();
+  }
+
+  private clearLocalSession(): void {
     sessionStorage.removeItem('auth_token');
     sessionStorage.removeItem('current_user');
     sessionStorage.removeItem('must_change_password');
