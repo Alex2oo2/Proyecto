@@ -1,4 +1,5 @@
 /* Etapa 1 */
+SET SQL_SAFE_UPDATES = 0;
 
 drop schema if exists ProyectoAnalisis;
 
