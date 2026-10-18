@@ -108,10 +108,17 @@ async function login(req, res) {
       });
     }
 
+    const diasConfigurados = politica?.PasswordCantidadCaducidadDias;
+    const diasVigencia = Number(diasConfigurados);
+    if (diasConfigurados !== null && diasConfigurados !== undefined && diasVigencia === 0) {
+      return res.status(403).json({
+        mensaje: 'Su contraseña ha expirado.Comuníquese con un administrador para obtener una nueva.'
+      });
+    }
+
     const fechaCambio = usuario.UltimaFechaCambioPassword
       ? new Date(usuario.UltimaFechaCambioPassword)
       : null;
-    const diasVigencia = Number(politica?.PasswordCantidadCaducidadDias || 0);
     const passwordCaducada = Boolean(
       fechaCambio && diasVigencia > 0 &&
       Date.now() - fechaCambio.getTime() >= diasVigencia * 24 * 60 * 60 * 1000

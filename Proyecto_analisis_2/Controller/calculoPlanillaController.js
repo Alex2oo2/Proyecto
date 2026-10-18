@@ -33,6 +33,12 @@ async function calcularPlanilla(req, res) {
       resultado
     });
   } catch (error) {
+    console.error('Error al calcular la planilla:', {
+      code: error.code,
+      errno: error.errno,
+      sqlState: error.sqlState,
+      sqlMessage: error.sqlMessage
+    });
     sendDatabaseError(res, error, 'planilla', 'calcular la planilla');
   }
 }

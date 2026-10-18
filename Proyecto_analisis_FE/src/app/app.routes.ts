@@ -27,7 +27,6 @@ export const routes: Routes = [
     component: DashboardComponent,
     canActivate: [authGuard],
     children: [
-      { path: '', component: ModulosComponent },
       { path: 'change-password', component: ChangePasswordComponent },
       { path: 'empresas', component: CompaniesComponent },
       { path: 'sucursales', component: BranchesComponent },
