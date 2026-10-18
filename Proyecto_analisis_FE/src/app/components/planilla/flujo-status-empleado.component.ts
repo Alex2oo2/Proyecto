@@ -10,20 +10,20 @@ import { ConfigCrud } from './crud-config';
 })
 export class FlujoStatusEmpleadoComponent {
   config: ConfigCrud = {
-    titulo: 'Flujos de estados del empleado',
-    descripcion: 'Administra las transiciones permitidas entre los estados laborales de un empleado',
+    titulo: 'Flujos de Status de Empleado',
+    descripcion: 'Administra las transiciones permitidas entre los status de un empleado',
     recurso: 'flujos-status-empleado',
     opcion: 'Flujos Status Empleado',
-    singular: 'flujo de estados laborales',
+    singular: 'flujo de status',
     claves: ['IdStatusActual', 'IdStatusNuevo'],
     campos: [
-      { nombre: 'IdStatusActual', etiqueta: 'Estado actual', tipo: 'select', requerido: true, catalogo: 'statusEmpleados', soloLecturaAlEditar: true },
-      { nombre: 'IdStatusNuevo', etiqueta: 'Estado nuevo', tipo: 'select', requerido: true, catalogo: 'statusEmpleados', soloLecturaAlEditar: true },
+      { nombre: 'IdStatusActual', etiqueta: 'Status actual', tipo: 'select', requerido: true, catalogo: 'statusEmpleados', soloLecturaAlEditar: true },
+      { nombre: 'IdStatusNuevo', etiqueta: 'Status nuevo', tipo: 'select', requerido: true, catalogo: 'statusEmpleados', soloLecturaAlEditar: true },
       { nombre: 'NombreEvento', etiqueta: 'Evento que origina el cambio', tipo: 'texto', requerido: true, longitudMaxima: 50 }
     ],
     columnas: [
-      { campo: 'NombreStatusActual', titulo: 'Estado actual' },
-      { campo: 'NombreStatusNuevo', titulo: 'Estado nuevo' },
+      { campo: 'NombreStatusActual', titulo: 'Status actual' },
+      { campo: 'NombreStatusNuevo', titulo: 'Status nuevo' },
       { campo: 'NombreEvento', titulo: 'Evento' }
     ],
     descripcionRegistro: (registro) => `el flujo "${registro.NombreStatusActual} → ${registro.NombreStatusNuevo}"`

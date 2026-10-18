@@ -44,7 +44,7 @@ async function bloquearUsuario(idUsuario, idStatusBloqueado) {
   await db.query(sql, [idStatusBloqueado, idUsuario]);
 }
 
-// Agregar estas funciones al archivo usuarioModel.js existente
+
 
 async function registrarLoginExitoso(idUsuario, idStatusActivo) {
   const sql = `
@@ -77,9 +77,6 @@ async function actualizarPasswordMigrada(idUsuario, hashedPassword) {
     [hashedPassword, idUsuario]
   );
 }
-
-// Reemplaza tu resetearIntentosYEstado por registrarLoginExitoso en el controller.
-// module.exports = { ..., registrarLoginExitoso, cerrarSesion };
 
 async function crearUsuario(usuario) {
   const { 
