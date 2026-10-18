@@ -95,13 +95,13 @@ const recursos = [
     ruta: 'status-empleados',
     opcion: 'Status Empleado',
     entidad: 'statusEmpleado',
-    nombre: 'estatus del empleado',
+    nombre: 'status de empleado',
     model: statusEmpleadoModel,
     claves: ['IdStatusEmpleado'],
     requeridos: { Nombre: 'Nombre' },
     exportacion: {
       archivo: 'status-empleado',
-      titulo: 'Estatus del empleado',
+      titulo: 'Status de Empleado',
       columnas: [
         { campo: 'IdStatusEmpleado', titulo: 'Cód.', tipo: 'numero', ancho: 1 },
         { campo: 'Nombre', titulo: 'Nombre', ancho: 4 },
@@ -116,10 +116,10 @@ const recursos = [
     ruta: 'flujos-status-empleado',
     opcion: 'Flujos Status Empleado',
     entidad: 'flujoStatusEmpleado',
-    nombre: 'flujo de estados laborales',
+    nombre: 'flujo de status',
     model: flujoStatusEmpleadoModel,
     claves: ['IdStatusActual', 'IdStatusNuevo'],
-    requeridos: { IdStatusActual: 'Estado actual', IdStatusNuevo: 'Estado nuevo', NombreEvento: 'Evento' },
+    requeridos: { IdStatusActual: 'Status actual', IdStatusNuevo: 'Status nuevo', NombreEvento: 'Evento' },
     catalogos: ['statusEmpleados'],
     hooks: {
       antesDeCrear: (datos) => (
@@ -130,10 +130,10 @@ const recursos = [
     },
     exportacion: {
       archivo: 'flujos-status-empleado',
-      titulo: 'Flujos de estados del empleado',
+      titulo: 'Flujos de Status de Empleado',
       columnas: [
-        { campo: 'NombreStatusActual', titulo: 'Estado actual', ancho: 3 },
-        { campo: 'NombreStatusNuevo', titulo: 'Estado nuevo', ancho: 3 },
+        { campo: 'NombreStatusActual', titulo: 'Status actual', ancho: 3 },
+        { campo: 'NombreStatusNuevo', titulo: 'Status nuevo', ancho: 3 },
         { campo: 'NombreEvento', titulo: 'Evento', ancho: 5 },
         { campo: 'FechaCreacion', titulo: 'Fecha creación', tipo: 'fechahora', ancho: 2 },
         { campo: 'UsuarioCreacion', titulo: 'Usuario creación', ancho: 2 }
@@ -306,7 +306,7 @@ const recursos = [
             datos.IdStatusEmpleado
           );
           if (!permitido) {
-            return { mensaje: 'El cambio de estado no corresponde a un flujo configurado.' };
+            return { mensaje: 'El cambio de status no corresponde a un flujo configurado en Flujos Status Empleado.' };
           }
         }
         return null;
